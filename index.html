@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Mnemosyne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800&family=ABeeZee&family=Exo+2:wght@300;400;500;700&family=Inter:wght@400;500;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- Firebase compat SDK — must load before importmap -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<!-- 3D viewer styles (for view-preview / #page) -->
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ── reset ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#e8ddd3;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:100vh;
+  font-family:'Exo 2',sans-serif;
+}
+#app { width:1280px; }
+
+/* ── view routing ── */
+.view { display:none; width:1280px; }
+.view.active { display:block; }
+
+/* ════════════════════════════════
+   SPLASH STYLES
+════════════════════════════════ */
+#view-splash .splash-root {
+  position:relative; width:1280px; height:832px;
+  background:#000; overflow:hidden;
+}
+#view-splash .splash-logo {
+  position:absolute; left:322px; top:248px;
+  width:636px; height:228px; object-fit:contain;
+}
+#view-splash .splash-title {
+  position:absolute; left:640px; top:498px;
+  transform:translateX(-50%);
+  font-family:'Orbitron',sans-serif; font-weight:800; font-size:16px;
+  color:#fff; white-space:nowrap; letter-spacing:0.08em;
+}
+#btn-explore {
+  position:absolute; left:516px; top:628px;
+  width:248px; height:68px;
+  background:none; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+#btn-explore .explore-bg {
+  position:absolute; inset:0; width:100%; height:100%; object-fit:fill;
+}
+#btn-explore .explore-label {
+  position:relative; z-index:1;
+  font-family:'Orbitron',sans-serif; font-weight:800; font-size:22px;
+  color:#fff; letter-spacing:0.04em;
+}
+#btn-explore .explore-icon {
+  position:relative; z-index:1; width:22px; height:22px; object-fit:contain;
+}
+
+/* ════════════════════════════════
+   HOME PAGE STYLES (shared for view-home & view-home2)
+════════════════════════════════ */
+.home-root {
+  position:relative; width:1280px; min-height:3900px;
+  background:#3a1b07; overflow-x:hidden;
+}
+.home-nav-pill {
+  position:absolute; top:27px;
+  height:22px; padding:3px 14px;
+  border:1px solid #fff; border-radius:46px;
+  background:rgba(0,0,0,0); color:#fff;
+  font-family:'Orbitron',sans-serif; font-weight:400; font-size:12px;
+  letter-spacing:-0.24px; cursor:pointer; text-decoration:none;
+  display:flex; align-items:center;
+  box-shadow:0 4px 4px rgba(0,0,0,0.25);
+  filter:drop-shadow(0 4px 2px rgba(0,0,0,0.25));
+  transition:background 0.15s;
+}
+.home-nav-pill:hover { background:rgba(255,255,255,0.12); }
+.home-glass-bg {
+  position:absolute; border-radius:35px;
+  background:rgba(217,217,217,0.5);
+  backdrop-filter:blur(2px);
+}
+.home-gallery-card {
+  position:absolute; border-radius:38px;
+  backdrop-filter:blur(2px); border:1px solid #e7e7e7;
+}
+
+/* ════════════════════════════════
+   LOGIN STYLES
+════════════════════════════════ */
+#view-login .login-root {
+  position:relative; width:1280px; height:832px;
+  background:#000; overflow:hidden;
+}
+#view-login .login-card {
+  position:absolute; left:713px; top:82px; width:529px; height:667px;
+  border-radius:20px;
+  backdrop-filter:blur(28px);
+  background:rgba(255,255,255,0.1);
+  box-shadow:10px 11px 37.6px rgba(0,0,0,0.25),
+    inset 0 0.9px 1.08px rgba(255,255,255,0.87),
+    inset 0 0 2px rgba(255,255,255,0.7),
+    inset 0 4px 16px rgba(255,255,255,0.2),
+    inset 0 16px 32px rgba(255,255,255,0.13);
+}
+.login-input {
+  display:block;
+  background:rgba(255,255,255,0.8);
+  border:1px solid rgba(102,102,102,0.35);
+  border-radius:12px;
+  font-family:'Poppins',sans-serif; font-size:14px; color:#333;
+  padding:0 12px; outline:none;
+}
+.login-input:focus { border-color:#ed7119; }
+#btn-email-login {
+  position:absolute; left:212px; top:407px;
+  width:97px; height:37px;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  border:1px solid #ed7119; border-radius:12px;
+  background:transparent; cursor:pointer;
+  font-family:'Inter',sans-serif; font-weight:700; font-size:16px;
+  color:#ed7119;
+}
+#btn-email-login:hover { background:rgba(237,113,25,0.08); }
+#btn-create-account {
+  position:absolute; left:26px; top:469px;
+  width:467px; height:48px;
+  background:#fff; border:none; border-radius:40px; cursor:pointer;
+  font-family:'Poppins',sans-serif; font-weight:500; font-size:22px;
+  color:#ed7119;
+}
+#btn-create-account:hover { background:#f5f5f5; }
+#googleLoginBtn {
+  position:absolute; left:37px; top:577px;
+  width:467px; height:48px;
+  background:#fff; border:2px solid #ed7119; border-radius:32px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  font-family:'Arial',sans-serif; font-style:italic; font-size:24px; color:#333;
+}
+#googleLoginBtn:hover { background:#fdf4ee; }
+.google-icon { width:24px; height:24px; position:relative; flex-shrink:0; }
+.google-icon img { position:absolute; }
+
+/* ════════════════════════════════
+   PERSONAL INFO PAGE STYLES
+════════════════════════════════ */
+#view-personal-info .pi-root {
+  position:relative; width:1280px; height:832px;
+  background:#f0e9df; overflow:hidden;
+}
+#view-personal-info .pi-navbar {
+  position:absolute; left:0; top:0; width:1280px; height:90px;
+}
+#view-personal-info .pi-navbar::after {
+  content:''; position:absolute;
+  left:66px; right:63px; top:91px; height:1px;
+  background:rgba(0,0,0,0.18);
+}
+#view-personal-info .pi-logo-link {
+  text-decoration:none; position:absolute; left:36px; top:19px;
+}
+#view-personal-info .pi-logo-wrap {
+  width:136px; height:37px; overflow:hidden; position:relative;
+}
+#view-personal-info .pi-logo-img8 {
+  position:absolute; left:0; top:0; width:80%; height:80%; object-fit:contain;
+}
+#view-personal-info .pi-logo-img10 {
+  position:absolute; left:0; bottom:0; width:100%; height:70%; object-fit:contain;
+}
+#view-personal-info .pi-logo-text {
+  position:absolute; left:98.5px; top:59px;
+  transform:translateX(-50%);
+  font-family:'Orbitron',sans-serif; font-weight:800; font-size:12px;
+  color:#000; text-align:center; white-space:nowrap;
+}
+#view-personal-info .pi-nav-links {
+  position:absolute; left:370px; top:31px;
+  display:flex; gap:22px; align-items:center;
+}
+.pi-nav-pill {
+  height:22px; padding:3px 14px;
+  border:1px solid #000; border-radius:46px; background:transparent;
+  font-family:'Orbitron',sans-serif; font-weight:400; font-size:12px; color:#000;
+  text-decoration:none; cursor:pointer; letter-spacing:-0.24px;
+  display:flex; align-items:center;
+  box-shadow:0 4px 4px rgba(0,0,0,0.25);
+  transition:background 0.15s;
+}
+.pi-nav-pill:hover { background:rgba(0,0,0,0.06); }
+#view-personal-info .pi-user-icon {
+  position:absolute; right:37px; top:38px; width:25px; height:25px; cursor:pointer;
+}
+#view-personal-info .pi-progress-wrap {
+  position:absolute; left:0; top:91px; width:1280px; height:100px;
+}
+.pi-prog-line {
+  position:absolute; top:45px; height:1px; background:rgba(0,0,0,0.2);
+  left:66px; right:63px;
+}
+.pi-prog-step {
+  position:absolute; top:29px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.pi-prog-dot {
+  width:31px; height:31px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'ABeeZee',sans-serif; font-size:20px; letter-spacing:-0.4px;
+}
+.pi-prog-dot.inactive { background:#d9d0c7; color:#828282; }
+.pi-prog-dot.active   { background:#ed7119; color:#fff; }
+.pi-prog-label {
+  font-family:'Exo 2',sans-serif; font-weight:300; font-size:16px;
+  color:#000; text-align:center; letter-spacing:-0.32px; line-height:1.3;
+}
+.pi-prog-dot.active + .pi-prog-label { font-weight:700; }
+/* form cards */
+.pi-card {
+  position:absolute;
+  backdrop-filter:blur(28px);
+  background:rgba(255,255,255,0.5);
+  box-shadow:10px 11px 37.6px rgba(0,0,0,0.25),
+    inset 0 0.9px 1.08px rgba(255,255,255,0.87),
+    inset 0 0 2px rgba(255,255,255,0.7),
+    inset 0 4px 16px rgba(255,255,255,0.2),
+    inset 0 16px 32px rgba(255,255,255,0.13);
+  border-radius:20px;
+}
+.pi-field-label {
+  font-family:'Exo 2',sans-serif; font-weight:500; font-size:14px;
+  color:#444; margin-bottom:4px; display:block;
+}
+.pi-field-label span.req { color:#ed7119; }
+.pi-input {
+  width:100%; height:34px;
+  background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.15);
+  border-radius:10px; padding:0 10px;
+  font-family:'Exo 2',sans-serif; font-size:13px; color:#333; outline:none;
+}
+.pi-input:focus { border-color:#ed7119; }
+.pi-select {
+  width:100%; height:34px;
+  background:rgba(255,255,255,0.7) url("https://www.figma.com/api/mcp/asset/b3403486-7cf4-45d9-aabd-2b2ded25845d") no-repeat right 10px center / 14px;
+  border:1px solid rgba(0,0,0,0.15); border-radius:10px; padding:0 30px 0 10px;
+  font-family:'Exo 2',sans-serif; font-size:13px; color:#333; outline:none;
+  appearance:none; cursor:pointer;
+}
+.pi-radio-row { display:flex; gap:16px; align-items:center; }
+.pi-radio-opt { display:flex; align-items:center; gap:6px; cursor:pointer;
+  font-family:'Exo 2',sans-serif; font-size:13px; color:#333; }
+.pi-radio-opt input[type=radio] { accent-color:#ed7119; width:16px; height:16px; }
+#btn-next-step {
+  position:absolute; left:1114px; top:732px;
+  width:100px; height:66px;
+  background:none; border:none; cursor:pointer; padding:0;
+}
+#btn-next-step img { width:100%; height:100%; object-fit:contain; }
+#pi-back-btn {
+  position:absolute; left:66px; top:732px;
+  width:131px; height:66px;
+  border-radius:15px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:flex-end;
+  gap:8px; padding:14px 13px 14px 16px;
+  background:rgba(221,221,221,0.3); backdrop-filter:blur(28px);
+  box-shadow:5px 9px 6.3px rgba(221,221,221,0.3),
+    inset 0 0.9px 1.08px rgba(221,221,221,0.87),
+    inset 0 0 2px rgba(221,221,221,0.7),
+    inset 0 4px 16px rgba(221,221,221,0.2),
+    inset 0 16px 32px rgba(221,221,221,0.13);
+  transition:background 0.15s, transform 0.1s;
+}
+#pi-back-btn:hover { background:rgba(221,221,221,0.5); transform:translateX(-2px); }
+#pi-back-btn span {
+  font-family:'Exo 2',sans-serif; font-weight:600; font-size:28px;
+  color:#989898; letter-spacing:-0.64px;
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+<!-- ══════════════════════════════════
+     VIEW 1 : SPLASH  (1:1197)
+══════════════════════════════════ -->
+<div id="view-splash" class="view active">
+  <div class="splash-root">
+    <!-- geometric logo (large, centred-left) -->
+    <img class="splash-logo"
+      src="https://www.figma.com/api/mcp/asset/e03a8eba-b64e-4ef5-b6bf-22b2509e887e"
+      alt="Mnemosyne logo">
+    <p class="splash-title">MNEMOSYNE</p>
+
+    <!-- Explore CTA -->
+    <button id="btn-explore">
+      <img class="explore-bg"
+        src="https://www.figma.com/api/mcp/asset/1cd0508e-18f4-45c4-8c83-3e1f50085dd0"
+        alt="">
+      <span class="explore-label">Explore</span>
+      <img class="explore-icon"
+        src="https://www.figma.com/api/mcp/asset/957f42ce-2938-4b14-a339-94dcab7ae017"
+        alt="">
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     VIEW 2 : HOME  (1:568)
+══════════════════════════════════ -->
+<div id="view-home" class="view">
+  <div class="home-root">
+
+    <!-- frosted glass hero bg -->
+    <div class="home-glass-bg" style="left:35px;top:95px;width:1207px;height:825px;opacity:0.42;"></div>
+
+    <!-- hero photo -->
+    <img style="position:absolute;left:482px;top:131px;width:737px;height:761px;border-radius:35px;opacity:0.8;object-fit:cover;"
+      src="https://www.figma.com/api/mcp/asset/1db262fd-4bf0-4ff2-9835-3c99bb511488" alt="hero">
+
+    <!-- ── logo ── -->
+    <div style="position:absolute;left:35px;top:15px;width:136px;height:37px;overflow:hidden;">
+      <img style="position:absolute;left:4px;top:4px;width:57px;height:22px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/b70db286-ad72-498f-b3a9-15bd9ba9d6b8" alt="">
+      <img style="position:absolute;left:2px;top:10px;width:132px;height:25px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/baa1d62d-9ec3-4d11-bc6b-ab9b55135ad3" alt="">
+    </div>
+    <p style="position:absolute;left:97.5px;top:55px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;text-align:center;white-space:nowrap;">MNEMOSYNE</p>
+
+    <!-- ── nav pills ── -->
+    <a class="home-nav-pill nav-design" href="#" style="left:310px;" onclick="return false;">DESIGN</a>
+    <button class="home-nav-pill" style="left:489px;">ABOUT</button>
+    <a class="home-nav-pill" href="#" style="left:616px;" onclick="return false;">WORKS</a>
+    <a class="home-nav-pill" href="#" style="left:796px;" onclick="return false;">COMMUNITY</a>
+    <a class="home-nav-pill" href="#" style="left:985px;" onclick="return false;">CONTACT</a>
+    <a class="home-nav-pill btn-logout" href="#" style="left:1143px;" onclick="return false;">SIGN UP</a>
+
+    <!-- ── hero text ── -->
+    <div style="position:absolute;left:39px;top:219px;width:421px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:52px;color:#fff;text-align:right;line-height:1.1;">
+      <p>REFINE YOUR</p>
+      <p>NEW LIFE</p>
+    </div>
+
+    <!-- hero paragraph -->
+    <p style="position:absolute;left:69px;top:400px;width:381px;font-family:'Orbitron',sans-serif;font-weight:600;font-size:16px;color:#fff;line-height:1.2;letter-spacing:-0.32px;">
+      As populations age, elderly increasingly face daily challenges that homes and products were never designed to accommodate. Many struggle not because of severe illness, but because ordinary environments fail to support their changing bodies and emotional needs. Mnemosyne is dedicated to improving this issue.
+    </p>
+
+    <!-- DISCOVER NOW button -->
+    <a href="#" onclick="return false;" style="position:absolute;left:107px;top:596px;width:281px;height:59px;display:flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:46px;background:rgba(0,0,0,0.1);box-shadow:0 4px 4px rgba(0,0,0,0.25);text-decoration:none;">
+      <span style="font-family:'Orbitron',sans-serif;font-weight:800;font-size:24px;color:#fff;">DISCOVER NOW</span>
+    </a>
+
+    <!-- slider dots -->
+    <img style="position:absolute;left:812px;top:860px;width:78px;height:18px;object-fit:contain;"
+      src="https://www.figma.com/api/mcp/asset/bce6f538-a4c3-41bf-99bc-e7658547eba2" alt="">
+
+    <!-- ── About section ── -->
+    <div class="home-glass-bg" style="left:38px;top:1009px;width:1207px;height:338px;opacity:1;"></div>
+    <p style="position:absolute;left:101.5px;top:1042px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;white-space:nowrap;">ABOUT US</p>
+    <div style="position:absolute;left:65px;top:1067px;width:493px;font-family:'Orbitron',sans-serif;font-size:11px;color:#fff;line-height:1.5;">
+      <p><strong>RC5 – Mnemosyne Team</strong><br>
+      <span style="font-weight:500;">The Bartlett School of Architecture, UCL</span></p>
+      <p style="margin-top:8px;">Our research focuses on aging societies and the spatial challenges faced by elderly communities. As physical ability and daily routines change over time, conventional housing often fails to adapt to the evolving needs of its residents. We ask a fundamental question:</p>
+      <p style="margin-top:8px;">Can architecture behave like a product—capable of adapting, updating, and reconfiguring according to the user?</p>
+      <p style="margin-top:8px;">To address this, we developed the Mnemosyne System, a design framework that transforms architectural space into a modular, responsive living product. By integrating spatial modules with user-based data, the system can automatically generate and recombine living environments tailored to the changing physical conditions of elderly residents.</p>
+    </div>
+
+    <!-- ── Instagram section ── -->
+    <div class="home-glass-bg" style="left:38px;top:1426px;width:1207px;height:338px;opacity:1;"></div>
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:66px;top:1721px;display:block;width:24px;height:24px;">
+      <img style="width:100%;height:100%;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/1e34f2ac-6142-47f0-90f4-42ba36ef52c0" alt="instagram">
+    </a>
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:99px;top:1728px;display:block;width:70px;height:17px;">
+      <img style="width:100%;height:100%;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/ab0fd5f0-1e26-4fbd-bf72-d29b475347c7" alt="Instagram">
+    </a>
+
+    <!-- ── Gallery section (stacked cards) ── -->
+    <!-- Stack 1 -->
+    <div style="position:absolute;left:232px;top:2200px;width:381px;height:230px;transform:rotate(-12.63deg);">
+      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
+    </div>
+    <div style="position:absolute;left:268px;top:2252px;width:342px;height:166px;transform:rotate(-12.63deg);">
+      <div style="position:absolute;inset:0;background:#fff;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    </div>
+    <!-- Stack 2 -->
+    <div style="position:absolute;left:678px;top:2238px;width:381px;height:230px;">
+      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
+    </div>
+    <div style="position:absolute;left:703px;top:2289px;width:342px;height:166px;">
+      <div style="position:absolute;inset:0;background:#fff;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    </div>
+    <!-- Stack 3 -->
+    <div style="position:absolute;left:752px;top:2280px;width:381px;height:230px;">
+      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
+    </div>
+    <div style="position:absolute;left:777px;top:2331px;width:342px;height:166px;">
+      <div style="position:absolute;inset:0;background:#ccc;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    </div>
+    <!-- Stack 4 -->
+    <div style="position:absolute;left:854px;top:2349px;width:381px;height:230px;">
+      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
+    </div>
+    <div style="position:absolute;left:879px;top:2400px;width:342px;height:166px;">
+      <div style="position:absolute;inset:0;background:#aaa7a7;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    </div>
+    <!-- Stack 5 -->
+    <div style="position:absolute;left:942px;top:2451px;width:381px;height:230px;">
+      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
+    </div>
+    <div style="position:absolute;left:967px;top:2502px;width:342px;height:166px;">
+      <div style="position:absolute;inset:0;background:#707070;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     VIEW 3 : HOME V2  (1:882) — same content
+══════════════════════════════════ -->
+<div id="view-home2" class="view">
+  <div class="home-root">
+    <div class="home-glass-bg" style="left:35px;top:95px;width:1207px;height:825px;opacity:0.42;"></div>
+    <img style="position:absolute;left:482px;top:131px;width:737px;height:761px;border-radius:35px;opacity:0.8;object-fit:cover;"
+      src="https://www.figma.com/api/mcp/asset/f43b78d3-37fd-4fc2-9715-b30ea30bc305" alt="hero">
+    <div style="position:absolute;left:35px;top:15px;width:136px;height:37px;overflow:hidden;">
+      <img style="position:absolute;left:4px;top:4px;width:57px;height:22px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/e7778832-6f40-411b-a0ca-e802f9354faf" alt="">
+      <img style="position:absolute;left:2px;top:10px;width:132px;height:25px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/d44f3229-f46d-4c4c-a0fb-b5d48423fd8e" alt="">
+    </div>
+    <p style="position:absolute;left:97.5px;top:55px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;text-align:center;white-space:nowrap;">MNEMOSYNE</p>
+    <a class="home-nav-pill nav-design" href="#" style="left:310px;" onclick="return false;">DESIGN</a>
+    <button class="home-nav-pill" style="left:489px;">ABOUT</button>
+    <a class="home-nav-pill" href="#" style="left:616px;" onclick="return false;">WORKS</a>
+    <a class="home-nav-pill" href="#" style="left:796px;" onclick="return false;">COMMUNITY</a>
+    <a class="home-nav-pill" href="#" style="left:985px;" onclick="return false;">CONTACT</a>
+    <a class="home-nav-pill btn-logout" href="#" style="left:1143px;" onclick="return false;">SIGN UP</a>
+    <div style="position:absolute;left:39px;top:219px;width:421px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:52px;color:#fff;text-align:right;line-height:1.1;">
+      <p>REFINE YOUR</p><p>NEW LIFE</p>
+    </div>
+    <p style="position:absolute;left:69px;top:400px;width:381px;font-family:'Orbitron',sans-serif;font-weight:600;font-size:16px;color:#fff;line-height:1.2;letter-spacing:-0.32px;">
+      As populations age, elderly increasingly face daily challenges that homes and products were never designed to accommodate. Many struggle not because of severe illness, but because ordinary environments fail to support their changing bodies and emotional needs. Mnemosyne is dedicated to improving this issue.
+    </p>
+    <a href="#" onclick="return false;" style="position:absolute;left:107px;top:596px;width:281px;height:59px;display:flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:46px;background:rgba(0,0,0,0.1);box-shadow:0 4px 4px rgba(0,0,0,0.25);text-decoration:none;">
+      <span style="font-family:'Orbitron',sans-serif;font-weight:800;font-size:24px;color:#fff;">DISCOVER NOW</span>
+    </a>
+    <img style="position:absolute;left:812px;top:860px;width:78px;height:18px;object-fit:contain;"
+      src="https://www.figma.com/api/mcp/asset/c9f5859f-ccf9-4c4c-b196-c83f279b9443" alt="">
+    <div class="home-glass-bg" style="left:38px;top:1009px;width:1207px;height:338px;opacity:1;"></div>
+    <p style="position:absolute;left:101.5px;top:1042px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;white-space:nowrap;">ABOUT US</p>
+    <div style="position:absolute;left:65px;top:1067px;width:493px;font-family:'Orbitron',sans-serif;font-size:11px;color:#fff;line-height:1.5;">
+      <p><strong>RC5 – Mnemosyne Team</strong><br><span style="font-weight:500;">The Bartlett School of Architecture, UCL</span></p>
+      <p style="margin-top:8px;">Our research focuses on aging societies and the spatial challenges faced by elderly communities. As physical ability and daily routines change over time, conventional housing often fails to adapt to the evolving needs of its residents. We ask a fundamental question:</p>
+      <p style="margin-top:8px;">Can architecture behave like a product—capable of adapting, updating, and reconfiguring according to the user?</p>
+      <p style="margin-top:8px;">To address this, we developed the Mnemosyne System, a design framework that transforms architectural space into a modular, responsive living product.</p>
+    </div>
+    <div class="home-glass-bg" style="left:38px;top:1426px;width:1207px;height:338px;opacity:1;"></div>
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:66px;top:1721px;display:block;width:24px;height:24px;">
+      <img style="width:100%;height:100%;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/fc4cc045-7a0a-4f39-aa18-bdb121551041" alt="">
+    </a>
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:99px;top:1728px;display:block;width:70px;height:17px;">
+      <img style="width:100%;height:100%;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/5a2fc299-3d8d-4938-a485-5eb29fd8da4f" alt="">
+    </a>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     VIEW 4 : LOGIN  (1:1205)
+══════════════════════════════════ -->
+<div id="view-login" class="view">
+  <div class="login-root">
+
+    <!-- logo left side -->
+    <div style="position:absolute;left:34px;top:301px;width:636px;height:171px;overflow:hidden;">
+      <img style="position:absolute;left:20px;top:20px;width:280px;height:100px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/fc47d9fa-9aec-4e65-93e6-805aed595f16" alt="">
+      <img style="position:absolute;left:3px;top:46px;width:630px;height:120px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/a8a9099d-983b-4ee2-bed2-97ff43d77e4d" alt="">
+    </div>
+    <p style="position:absolute;left:349px;top:510px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:16px;color:#fff;white-space:nowrap;letter-spacing:0.08em;">MNEMOSYNE</p>
+
+    <!-- glass card -->
+    <div class="login-card">
+
+      <!-- Welcome to -->
+      <p style="position:absolute;left:26px;top:56px;font-family:'Inter',sans-serif;font-weight:700;font-size:36px;color:#fff;white-space:nowrap;">Welcome to</p>
+      <!-- Mnemosyne orange -->
+      <p style="position:absolute;left:26px;top:102px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:52px;color:#ed7119;white-space:nowrap;">Mnemosyne</p>
+
+      <!-- Email -->
+      <label style="position:absolute;left:26px;top:176px;font-family:'Poppins',sans-serif;font-size:16px;color:#fff;">Email</label>
+      <input id="login-email" class="login-input" type="email" placeholder=""
+        style="position:absolute;left:26px;top:206px;width:465px;height:36px;">
+
+      <!-- Password -->
+      <label style="position:absolute;left:26px;top:249px;font-family:'Poppins',sans-serif;font-size:16px;color:#fff;">Password</label>
+      <input id="login-password" class="login-input" type="password" placeholder=""
+        style="position:absolute;left:26px;top:279px;width:465px;height:37px;">
+
+      <!-- Terms checkbox -->
+      <div style="position:absolute;left:26px;top:334px;display:flex;align-items:flex-start;gap:8px;width:465px;">
+        <input type="checkbox" id="terms-check" style="margin-top:3px;accent-color:#ed7119;width:16px;height:16px;flex-shrink:0;">
+        <label for="terms-check" style="font-family:'Poppins',sans-serif;font-size:14px;color:#b5b5b5;line-height:1.4;">
+          By creating an account, I agree to our
+          <span style="color:#fff;text-decoration:underline;cursor:pointer;">Terms of use</span> and
+          <span style="color:#fff;text-decoration:underline;cursor:pointer;">Privacy Policy</span>
+        </label>
+      </div>
+
+      <!-- LOGIN button -->
+      <button id="btn-email-login">
+        LOGIN
+        <img src="https://www.figma.com/api/mcp/asset/f1626c71-f79d-4048-b038-66efd3a1e17d"
+          style="width:17px;height:7px;transform:rotate(180deg)scaleY(-1);" alt="→">
+      </button>
+
+      <!-- Create account button -->
+      <button id="btn-create-account">Create an account</button>
+
+      <!-- OR divider -->
+      <div style="position:absolute;left:26px;top:533px;width:465px;display:flex;align-items:center;gap:23px;">
+        <div style="flex:1;height:2px;background:rgba(195,195,195,0.25);"></div>
+        <span style="font-family:'Arial',sans-serif;font-style:italic;font-size:24px;color:#fff;flex-shrink:0;">OR</span>
+        <div style="flex:1;height:2px;background:rgba(195,195,195,0.25);"></div>
+      </div>
+
+      <!-- Continue with Google -->
+      <button id="googleLoginBtn">
+        <!-- Google G icon (4-colour vectors) -->
+        <span class="google-icon">
+          <img src="https://www.figma.com/api/mcp/asset/5c2512fe-a114-4508-aebe-d0f0ea492fad"
+            style="inset:41% 6% 17% 51%;width:43%;height:42%;" alt="">
+          <img src="https://www.figma.com/api/mcp/asset/031c66f7-cbb0-4745-9194-92090712de4f"
+            style="inset:59% 20% 6% 11%;width:69%;height:35%;" alt="">
+          <img src="https://www.figma.com/api/mcp/asset/15f363d7-7150-43a7-8a70-469c7f4bbec8"
+            style="inset:30% 75% 30% 6%;width:19%;height:40%;" alt="">
+          <img src="https://www.figma.com/api/mcp/asset/881e9e3a-80e4-45de-a137-16d0e0ed7951"
+            style="inset:6% 19% 59% 11%;width:70%;height:35%;" alt="">
+        </span>
+        Continue with Google
+      </button>
+
+    </div><!-- .login-card -->
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     VIEW 5 : PERSONAL INFO FORM  (1:2430)
+══════════════════════════════════ -->
+<div id="view-personal-info" class="view">
+  <div class="pi-root">
+
+    <!-- navbar -->
+    <header class="pi-navbar">
+      <a class="pi-logo-link" href="#">
+        <div class="pi-logo-wrap">
+          <img class="pi-logo-img8"
+            src="https://www.figma.com/api/mcp/asset/73205c9b-d8cd-49da-8fa1-6596e54f2b86" alt="">
+          <img class="pi-logo-img10"
+            src="https://www.figma.com/api/mcp/asset/bf064f10-263e-4239-807f-864ab821d134" alt="">
+        </div>
+        <p class="pi-logo-text">MNEMOSYNE</p>
+      </a>
+      <nav class="pi-nav-links">
+        <a class="pi-nav-pill nav-design" href="#" onclick="return false;">DESIGN</a>
+        <button class="pi-nav-pill">ABOUT</button>
+        <a class="pi-nav-pill" href="#" onclick="return false;">WORKS</a>
+        <a class="pi-nav-pill" href="#" onclick="return false;">COMMUNITY</a>
+        <a class="pi-nav-pill" href="#" onclick="return false;">CONTACT</a>
+      </nav>
+      <img class="pi-user-icon btn-logout"
+        src="https://www.figma.com/api/mcp/asset/f6ab2afc-3093-4b8b-9dad-f4a9debdd7ce" alt="user"
+        style="cursor:pointer;">
+    </header>
+
+    <!-- progress bar — step 1 active -->
+    <div class="pi-progress-wrap">
+      <div class="pi-prog-line"></div>
+      <div class="pi-prog-step" style="left:188px;">
+        <div class="pi-prog-dot active"><span>1</span></div>
+        <div class="pi-prog-label"><strong>Personal<br>Information</strong></div>
+      </div>
+      <div class="pi-prog-step" style="left:479px;">
+        <div class="pi-prog-dot inactive"><span>2</span></div>
+        <div class="pi-prog-label">Select<br>Furniture</div>
+      </div>
+      <div class="pi-prog-step" style="left:770px;">
+        <div class="pi-prog-dot inactive"><span>3</span></div>
+        <div class="pi-prog-label">Select<br>Layout</div>
+      </div>
+      <div class="pi-prog-step" style="left:1061px;">
+        <div class="pi-prog-dot inactive"><span>4</span></div>
+        <div class="pi-prog-label">Preview</div>
+      </div>
+    </div>
+
+    <!-- form separator line -->
+    <div style="position:absolute;left:66px;right:63px;top:191px;height:1px;background:rgba(0,0,0,0.18);"></div>
+
+    <!-- ── Left card: Personal Details ── -->
+    <div class="pi-card" style="left:76px;top:210px;width:534px;height:490px;padding:24px;">
+      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:18px;">Personal Details</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;">
+        <div>
+          <label class="pi-field-label">First Name <span class="req">*</span></label>
+          <input class="pi-input" type="text" placeholder="Enter first name">
+        </div>
+        <div>
+          <label class="pi-field-label">Last Name <span class="req">*</span></label>
+          <input class="pi-input" type="text" placeholder="Enter last name">
+        </div>
+        <div>
+          <label class="pi-field-label">Date of Birth <span class="req">*</span></label>
+          <input class="pi-input" type="date">
+        </div>
+        <div>
+          <label class="pi-field-label">Gender</label>
+          <select class="pi-select">
+            <option value="">Select</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="pi-field-label">Address <span class="req">*</span></label>
+          <input class="pi-input" type="text" placeholder="Street address">
+        </div>
+        <div>
+          <label class="pi-field-label">City</label>
+          <input class="pi-input" type="text" placeholder="City">
+        </div>
+        <div>
+          <label class="pi-field-label">Postcode</label>
+          <input class="pi-input" type="text" placeholder="Postcode">
+        </div>
+        <div>
+          <label class="pi-field-label">Phone Number</label>
+          <input class="pi-input" type="tel" placeholder="+44">
+        </div>
+        <div>
+          <label class="pi-field-label">Email</label>
+          <input class="pi-input" type="email" placeholder="your@email.com">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="pi-field-label">Emergency Contact Name</label>
+          <input class="pi-input" type="text" placeholder="Full name">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="pi-field-label">Emergency Contact Phone</label>
+          <input class="pi-input" type="tel" placeholder="+44">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right card: Health & Mobility ── -->
+    <div class="pi-card" style="left:670px;top:210px;width:534px;height:490px;padding:24px;">
+      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:18px;">Health & Mobility</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <label class="pi-field-label">Mobility Level <span class="req">*</span></label>
+          <div class="pi-radio-row" style="margin-top:6px;">
+            <label class="pi-radio-opt"><input type="radio" name="mobility" value="full"> Full mobility</label>
+            <label class="pi-radio-opt"><input type="radio" name="mobility" value="limited"> Limited</label>
+            <label class="pi-radio-opt"><input type="radio" name="mobility" value="wheelchair"> Wheelchair</label>
+          </div>
+        </div>
+        <div>
+          <label class="pi-field-label">Walking Aid</label>
+          <div class="pi-radio-row" style="margin-top:6px;">
+            <label class="pi-radio-opt"><input type="radio" name="aid" value="none"> None</label>
+            <label class="pi-radio-opt"><input type="radio" name="aid" value="cane"> Cane</label>
+            <label class="pi-radio-opt"><input type="radio" name="aid" value="walker"> Walker</label>
+          </div>
+        </div>
+        <div>
+          <label class="pi-field-label">Medical Conditions</label>
+          <textarea style="width:100%;height:72px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:8px 10px;font-family:'Exo 2',sans-serif;font-size:13px;color:#333;resize:none;outline:none;" placeholder="List any relevant conditions…"></textarea>
+        </div>
+        <div>
+          <label class="pi-field-label">Current Medications</label>
+          <input class="pi-input" type="text" placeholder="Optional">
+        </div>
+        <div>
+          <label class="pi-field-label">Upload Medical Documents</label>
+          <label style="display:flex;align-items:center;gap:8px;width:100%;height:34px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:0 10px;cursor:pointer;font-family:'Exo 2',sans-serif;font-size:13px;color:#888;">
+            <img src="https://www.figma.com/api/mcp/asset/c483da18-ba8b-42d6-b5f7-1c067eb96de0"
+              style="width:16px;height:16px;object-fit:contain;" alt="">
+            Choose file…
+            <input type="file" style="display:none;">
+          </label>
+        </div>
+        <div>
+          <label class="pi-field-label">Additional Notes</label>
+          <textarea style="width:100%;height:52px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:8px 10px;font-family:'Exo 2',sans-serif;font-size:13px;color:#333;resize:none;outline:none;" placeholder="Anything else we should know…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- back button -->
+    <button id="pi-back-btn">
+      <img src="https://www.figma.com/api/mcp/asset/e04815de-b2d1-4f7c-a5ee-4ed427966bfb"
+        style="width:31px;height:24px;object-fit:contain;transform:rotate(180deg)scaleY(-1);" alt="←">
+      <span>Back</span>
+    </button>
+
+    <!-- next step button -->
+    <button id="btn-next-step">
+      <img src="https://www.figma.com/api/mcp/asset/d9a1c23a-997a-4110-b173-393196842d8e" alt="Next Step">
+    </button>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     VIEW 6 : 3D PREVIEW  (8:810)
+══════════════════════════════════ -->
+<div id="view-preview" class="view">
+<div id="page">
+
+  <!-- ── NAVBAR ── -->
+  <header id="navbar">
+    <a id="logo-link" href="#">
+      <div id="logo-wrap">
+        <img id="logo-img" src="https://www.figma.com/api/mcp/asset/464c3499-ce36-48c8-a823-e23ef6a267dc" alt="logo">
+      </div>
+      <p id="logo-text">MNEMOSYNE</p>
+    </a>
+    <nav id="nav-links">
+      <a class="nav-pill" href="#">DESIGN</a>
+      <button class="nav-pill">ABOUT</button>
+      <a class="nav-pill" href="#">WORKS</a>
+      <a class="nav-pill" href="#">COMMUNITY</a>
+      <a class="nav-pill" href="#">CONTACT</a>
+    </nav>
+    <img id="user-icon" src="https://www.figma.com/api/mcp/asset/31d38bf5-b942-41bb-9f37-f6c5f7805e64" alt="user">
+  </header>
+
+  <!-- ── PROGRESS STEPS ── -->
+  <div id="progress-wrap">
+    <div class="prog-line full-line"></div>
+    <div class="prog-step" style="left:188px">
+      <div class="prog-dot inactive"><span>1</span></div>
+      <div class="prog-label">Personal<br>Information</div>
+    </div>
+    <div class="prog-step" style="left:479px">
+      <div class="prog-dot inactive"><span>2</span></div>
+      <div class="prog-label">Select<br>Furniture</div>
+    </div>
+    <div class="prog-step" style="left:770px">
+      <div class="prog-dot inactive"><span>3</span></div>
+      <div class="prog-label">Select<br>Layout</div>
+    </div>
+    <div class="prog-step" style="left:1061px">
+      <div class="prog-dot active"><span>4</span></div>
+      <div class="prog-label"><strong>Preview</strong></div>
+    </div>
+  </div>
+
+  <!-- ── 3D VIEWER ── -->
+  <div id="viewer-wrap">
+    <canvas id="three-canvas"></canvas>
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <p id="loading-text">Loading 3D Model…</p>
+    </div>
+    <div id="click-hint">Click a component to inspect</div>
+  </div>
+
+  <!-- ── LEFT CONTROL CARDS ── -->
+  <div id="left-controls">
+    <button class="ctrl-card" id="btn-lighting">
+      <span class="ctrl-icon">
+        <img src="https://www.figma.com/api/mcp/asset/6869e3fe-5764-4c15-bd38-ac0e240f3cdd" alt="">
+      </span>
+      <span class="ctrl-label" id="lbl-lighting">Lighting Modes</span>
+    </button>
+    <button class="ctrl-card" id="btn-layout">
+      <span class="ctrl-icon">
+        <img src="https://www.figma.com/api/mcp/asset/00325ab1-95cb-42af-8b82-cc3d1a9b0a42" alt="">
+      </span>
+      <span class="ctrl-label">Change Layout</span>
+    </button>
+    <button class="ctrl-card" id="btn-material">
+      <span class="ctrl-icon">
+        <img src="https://www.figma.com/api/mcp/asset/853174f4-7f2b-49cf-85f1-bad0a8ae0680" alt="">
+      </span>
+      <span class="ctrl-label" id="lbl-material">Change Material</span>
+    </button>
+  </div>
+
+  <!-- ── RIGHT CONTROL CARDS ── -->
+  <div id="right-controls">
+    <button class="ctrl-card" id="btn-time">
+      <span class="ctrl-icon">
+        <img src="https://www.figma.com/api/mcp/asset/bb65ad1d-7726-47a8-9b77-ca91bccee6dd" alt="">
+      </span>
+      <span class="ctrl-label">Change Time</span>
+    </button>
+    <button class="ctrl-card" id="btn-furniture">
+      <span class="ctrl-icon">
+        <img src="https://www.figma.com/api/mcp/asset/f6a77178-b197-4777-8203-de6d86a5f541" alt="">
+      </span>
+      <span class="ctrl-label" id="lbl-furniture">Hide Furniture</span>
+    </button>
+    <button class="ctrl-card" id="btn-showinfo">
+      <span class="ctrl-icon">
+        <img src="https://www.figma.com/api/mcp/asset/f4bedd07-ff6b-4956-968d-45e4f6e5b7ee" alt="">
+      </span>
+      <span class="ctrl-label">Show Info</span>
+    </button>
+  </div>
+
+  <!-- ── INFO PANEL ── -->
+  <div id="info-panel" class="hidden">
+    <div class="info-header">
+      <span class="info-title">Component Info</span>
+      <button id="info-close">✕</button>
+    </div>
+    <div class="info-body">
+      <div class="info-row"><span class="ik">Name</span><span class="iv" id="i-name">—</span></div>
+      <div class="info-row"><span class="ik">Material</span><span class="iv" id="i-mat">—</span></div>
+      <div class="info-separator"></div>
+      <div class="info-row"><span class="ik">Width</span><span class="iv" id="i-w">—</span></div>
+      <div class="info-row"><span class="ik">Height</span><span class="iv" id="i-h">—</span></div>
+      <div class="info-row"><span class="ik">Depth</span><span class="iv" id="i-d">—</span></div>
+      <div class="info-separator"></div>
+      <div class="info-row"><span class="ik">Vertices</span><span class="iv" id="i-verts">—</span></div>
+      <div class="info-row"><span class="ik">Faces</span><span class="iv" id="i-faces">—</span></div>
+    </div>
+    <div class="info-footer">
+      <button id="info-deselect">Deselect</button>
+    </div>
+  </div>
+
+  <!-- ── BACK BUTTON ── -->
+  <button id="back-btn">
+    <img class="back-arrow"
+      src="https://www.figma.com/api/mcp/asset/e04815de-b2d1-4f7c-a5ee-4ed427966bfb"
+      alt="←">
+    <span>Back</span>
+  </button>
+
+</div><!-- #page -->
+</div><!-- #view-preview -->
+
+
+</div><!-- #app -->
+
+<!-- ══════════════════════════════════
+     FIREBASE INIT + PAGE ROUTING
+══════════════════════════════════ -->
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyBYz52ac34ve0F79MImQgNJuZD8uI4A8l0",
+    authDomain: "try11-c3723.firebaseapp.com",
+    projectId: "try11-c3723",
+    storageBucket: "try11-c3723.firebasestorage.app",
+    messagingSenderId: "934496894689",
+    appId: "1:934496894689:web:5419ac0eecbf08d45d01a0"
+  });
+  const _auth = firebase.auth();
+  const _provider = new firebase.auth.GoogleAuthProvider();
+
+  window.showPage = function(id) {
+    document.querySelectorAll('#app > .view').forEach(v => { v.style.display = 'none'; });
+    const target = document.getElementById(id);
+    if (target) target.style.display = 'block';
+    if (id === 'view-preview') {
+      window.dispatchEvent(new Event('resize'));
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // Splash → Login
+    var btnExplore = document.getElementById('btn-explore');
+    if (btnExplore) btnExplore.addEventListener('click', function() { window.showPage('view-login'); });
+
+    // DESIGN nav → Personal Info (all nav-design elements in home + personal-info)
+    document.querySelectorAll('.nav-design').forEach(function(el) {
+      el.addEventListener('click', function(e) { e.preventDefault(); window.showPage('view-personal-info'); });
+    });
+
+    // Personal Info → Preview
+    var btnNext = document.getElementById('btn-next-step');
+    if (btnNext) btnNext.addEventListener('click', function() { window.showPage('view-preview'); });
+
+    // Personal Info back → Home
+    var piBk = document.getElementById('pi-back-btn');
+    if (piBk) piBk.addEventListener('click', function() { window.showPage('view-home'); });
+
+    // Google login
+    var gBtn = document.getElementById('googleLoginBtn');
+    if (gBtn) {
+      gBtn.addEventListener('click', function() {
+        _auth.signInWithPopup(_provider).then(function(result) {
+          var user = result.user;
+          window.showPage('view-home');
+        }).catch(function(err) {
+          console.error('Google login error:', err.message);
+          alert('Login failed: ' + err.message);
+        });
+      });
+    }
+
+    // Email login
+    var eBtn = document.getElementById('btn-email-login');
+    if (eBtn) {
+      eBtn.addEventListener('click', function() {
+        var email = document.getElementById('login-email').value.trim();
+        var pwd   = document.getElementById('login-password').value;
+        if (!email || !pwd) { alert('Please enter email and password.'); return; }
+        _auth.signInWithEmailAndPassword(email, pwd).then(function() {
+          window.showPage('view-home');
+        }).catch(function(err) {
+          alert('Login error: ' + err.message);
+        });
+      });
+    }
+
+    // Logout (SIGN UP pill acts as logout when authenticated)
+    document.querySelectorAll('.btn-logout').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        _auth.signOut().then(function() { window.showPage('view-login'); });
+      });
+    });
+
+  });
+
+  // Auth state: if already signed in, skip login
+  _auth.onAuthStateChanged(function(user) {
+    if (user) {
+      var visibleView = null;
+      document.querySelectorAll('#app > .view').forEach(function(v) {
+        if (v.style.display === 'block') visibleView = v.id;
+      });
+      if (!visibleView || visibleView === 'view-splash' || visibleView === 'view-login') {
+        window.showPage('view-home');
+      }
+    }
+  });
+</script>
+
+<!-- Three.js importmap (unchanged) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
