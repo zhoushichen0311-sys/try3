@@ -12,71 +12,54 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
-<!-- 3D viewer styles (for view-preview / #page) -->
+<!-- 3D viewer styles -->
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ── reset ── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 body {
   background:#e8ddd3;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  min-height:100vh;
-  font-family:'Exo 2',sans-serif;
+  display:flex; justify-content:center; align-items:flex-start;
+  min-height:100vh; font-family:'Exo 2',sans-serif;
 }
 #app { width:1280px; }
-
-/* ── view routing ── */
 .view { display:none; width:1280px; }
 .view.active { display:block; }
 
-/* ════════════════════════════════
-   SPLASH STYLES
-════════════════════════════════ */
+/* ── SPLASH ── */
 #view-splash .splash-root {
   position:relative; width:1280px; height:832px;
   background:#000; overflow:hidden;
 }
 #view-splash .splash-logo {
-  position:absolute; left:322px; top:248px;
-  width:636px; height:228px; object-fit:contain;
+  position:absolute; left:422px; top:312px;
+  width:439px; height:236px; object-fit:contain;
 }
 #view-splash .splash-title {
-  position:absolute; left:640px; top:498px;
-  transform:translateX(-50%);
+  position:absolute; left:654px; top:510px; transform:translateX(-50%);
   font-family:'Orbitron',sans-serif; font-weight:800; font-size:16px;
   color:#fff; white-space:nowrap; letter-spacing:0.08em;
 }
 #btn-explore {
-  position:absolute; left:516px; top:628px;
-  width:248px; height:68px;
-  background:none; border:none; cursor:pointer;
+  position:absolute; left:554px; top:570px; width:172px; height:46px;
+  background:#cb7030; border:none; border-radius:46px; cursor:pointer;
   display:flex; align-items:center; justify-content:center; gap:10px;
+  box-shadow:0 4px 12px rgba(203,112,48,0.5); transition:background 0.15s;
 }
-#btn-explore .explore-bg {
-  position:absolute; inset:0; width:100%; height:100%; object-fit:fill;
-}
+#btn-explore:hover { background:#b5611c; }
 #btn-explore .explore-label {
-  position:relative; z-index:1;
-  font-family:'Orbitron',sans-serif; font-weight:800; font-size:22px;
+  font-family:'Orbitron',sans-serif; font-weight:800; font-size:16px;
   color:#fff; letter-spacing:0.04em;
 }
-#btn-explore .explore-icon {
-  position:relative; z-index:1; width:22px; height:22px; object-fit:contain;
-}
+#btn-explore .explore-icon { width:20px; height:20px; object-fit:contain; }
 
-/* ════════════════════════════════
-   HOME PAGE STYLES (shared for view-home & view-home2)
-════════════════════════════════ */
+/* ── HOME ── */
 .home-root {
   position:relative; width:1280px; min-height:3900px;
   background:#3a1b07; overflow-x:hidden;
 }
 .home-nav-pill {
-  position:absolute; top:27px;
-  height:22px; padding:3px 14px;
+  position:absolute; top:27px; height:22px; padding:3px 14px;
   border:1px solid #fff; border-radius:46px;
   background:rgba(0,0,0,0); color:#fff;
   font-family:'Orbitron',sans-serif; font-weight:400; font-size:12px;
@@ -89,25 +72,17 @@ body {
 .home-nav-pill:hover { background:rgba(255,255,255,0.12); }
 .home-glass-bg {
   position:absolute; border-radius:35px;
-  background:rgba(217,217,217,0.5);
-  backdrop-filter:blur(2px);
-}
-.home-gallery-card {
-  position:absolute; border-radius:38px;
-  backdrop-filter:blur(2px); border:1px solid #e7e7e7;
+  background:rgba(217,217,217,0.5); backdrop-filter:blur(2px);
 }
 
-/* ════════════════════════════════
-   LOGIN STYLES
-════════════════════════════════ */
+/* ── LOGIN ── */
 #view-login .login-root {
   position:relative; width:1280px; height:832px;
   background:#000; overflow:hidden;
 }
 #view-login .login-card {
   position:absolute; left:713px; top:82px; width:529px; height:667px;
-  border-radius:20px;
-  backdrop-filter:blur(28px);
+  border-radius:20px; backdrop-filter:blur(28px);
   background:rgba(255,255,255,0.1);
   box-shadow:10px 11px 37.6px rgba(0,0,0,0.25),
     inset 0 0.9px 1.08px rgba(255,255,255,0.87),
@@ -116,58 +91,45 @@ body {
     inset 0 16px 32px rgba(255,255,255,0.13);
 }
 .login-input {
-  display:block;
-  background:rgba(255,255,255,0.8);
-  border:1px solid rgba(102,102,102,0.35);
-  border-radius:12px;
+  display:block; background:rgba(255,255,255,0.8);
+  border:1px solid rgba(102,102,102,0.35); border-radius:12px;
   font-family:'Poppins',sans-serif; font-size:14px; color:#333;
   padding:0 12px; outline:none;
 }
 .login-input:focus { border-color:#ed7119; }
 #btn-email-login {
-  position:absolute; left:212px; top:407px;
-  width:97px; height:37px;
+  position:absolute; left:212px; top:407px; width:97px; height:37px;
   display:flex; align-items:center; justify-content:center; gap:6px;
   border:1px solid #ed7119; border-radius:12px;
   background:transparent; cursor:pointer;
-  font-family:'Inter',sans-serif; font-weight:700; font-size:16px;
-  color:#ed7119;
+  font-family:'Inter',sans-serif; font-weight:700; font-size:16px; color:#ed7119;
 }
 #btn-email-login:hover { background:rgba(237,113,25,0.08); }
 #btn-create-account {
-  position:absolute; left:26px; top:469px;
-  width:467px; height:48px;
+  position:absolute; left:26px; top:469px; width:467px; height:48px;
   background:#fff; border:none; border-radius:40px; cursor:pointer;
-  font-family:'Poppins',sans-serif; font-weight:500; font-size:22px;
-  color:#ed7119;
+  font-family:'Poppins',sans-serif; font-weight:500; font-size:22px; color:#ed7119;
 }
 #btn-create-account:hover { background:#f5f5f5; }
 #googleLoginBtn {
-  position:absolute; left:37px; top:577px;
-  width:467px; height:48px;
-  background:#fff; border:2px solid #ed7119; border-radius:32px;
-  cursor:pointer;
+  position:absolute; left:37px; top:577px; width:467px; height:48px;
+  background:#fff; border:2px solid #ed7119; border-radius:32px; cursor:pointer;
   display:flex; align-items:center; justify-content:center; gap:16px;
   font-family:'Arial',sans-serif; font-style:italic; font-size:24px; color:#333;
 }
 #googleLoginBtn:hover { background:#fdf4ee; }
-.google-icon { width:24px; height:24px; position:relative; flex-shrink:0; }
-.google-icon img { position:absolute; }
 
-/* ════════════════════════════════
-   PERSONAL INFO PAGE STYLES
-════════════════════════════════ */
+/* ── PERSONAL INFO ── */
+#view-personal-info { overflow-y:auto; max-height:100vh; }
 #view-personal-info .pi-root {
-  position:relative; width:1280px; height:832px;
-  background:#f0e9df; overflow:hidden;
+  position:relative; width:1280px; min-height:1920px; background:#f0e9df;
 }
 #view-personal-info .pi-navbar {
   position:absolute; left:0; top:0; width:1280px; height:90px;
 }
 #view-personal-info .pi-navbar::after {
-  content:''; position:absolute;
-  left:66px; right:63px; top:91px; height:1px;
-  background:rgba(0,0,0,0.18);
+  content:''; position:absolute; left:66px; right:63px; top:91px;
+  height:1px; background:rgba(0,0,0,0.18);
 }
 #view-personal-info .pi-logo-link {
   text-decoration:none; position:absolute; left:36px; top:19px;
@@ -176,29 +138,25 @@ body {
   width:136px; height:37px; overflow:hidden; position:relative;
 }
 #view-personal-info .pi-logo-img8 {
-  position:absolute; left:0; top:0; width:80%; height:80%; object-fit:contain;
+  position:absolute; left:2px; top:2px; width:60px; height:24px; object-fit:contain;
 }
 #view-personal-info .pi-logo-img10 {
-  position:absolute; left:0; bottom:0; width:100%; height:70%; object-fit:contain;
+  position:absolute; left:0; bottom:0; width:134px; height:26px; object-fit:contain;
 }
 #view-personal-info .pi-logo-text {
-  position:absolute; left:98.5px; top:59px;
-  transform:translateX(-50%);
+  position:absolute; left:98.5px; top:59px; transform:translateX(-50%);
   font-family:'Orbitron',sans-serif; font-weight:800; font-size:12px;
   color:#000; text-align:center; white-space:nowrap;
 }
 #view-personal-info .pi-nav-links {
-  position:absolute; left:370px; top:31px;
-  display:flex; gap:22px; align-items:center;
+  position:absolute; left:370px; top:31px; display:flex; gap:22px; align-items:center;
 }
 .pi-nav-pill {
-  height:22px; padding:3px 14px;
-  border:1px solid #000; border-radius:46px; background:transparent;
-  font-family:'Orbitron',sans-serif; font-weight:400; font-size:12px; color:#000;
-  text-decoration:none; cursor:pointer; letter-spacing:-0.24px;
-  display:flex; align-items:center;
-  box-shadow:0 4px 4px rgba(0,0,0,0.25);
-  transition:background 0.15s;
+  height:22px; padding:3px 14px; border:1px solid #000; border-radius:46px;
+  background:transparent; font-family:'Orbitron',sans-serif; font-weight:400;
+  font-size:12px; color:#000; text-decoration:none; cursor:pointer;
+  letter-spacing:-0.24px; display:flex; align-items:center;
+  box-shadow:0 4px 4px rgba(0,0,0,0.25); transition:background 0.15s;
 }
 .pi-nav-pill:hover { background:rgba(0,0,0,0.06); }
 #view-personal-info .pi-user-icon {
@@ -212,8 +170,8 @@ body {
   left:66px; right:63px;
 }
 .pi-prog-step {
-  position:absolute; top:29px;
-  display:flex; flex-direction:column; align-items:center; gap:6px;
+  position:absolute; top:29px; display:flex; flex-direction:column;
+  align-items:center; gap:6px;
 }
 .pi-prog-dot {
   width:31px; height:31px; border-radius:50%;
@@ -227,10 +185,8 @@ body {
   color:#000; text-align:center; letter-spacing:-0.32px; line-height:1.3;
 }
 .pi-prog-dot.active + .pi-prog-label { font-weight:700; }
-/* form cards */
 .pi-card {
-  position:absolute;
-  backdrop-filter:blur(28px);
+  position:absolute; backdrop-filter:blur(28px);
   background:rgba(255,255,255,0.5);
   box-shadow:10px 11px 37.6px rgba(0,0,0,0.25),
     inset 0 0.9px 1.08px rgba(255,255,255,0.87),
@@ -245,32 +201,40 @@ body {
 }
 .pi-field-label span.req { color:#ed7119; }
 .pi-input {
-  width:100%; height:34px;
-  background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.15);
-  border-radius:10px; padding:0 10px;
+  width:100%; height:34px; background:rgba(255,255,255,0.7);
+  border:1px solid rgba(0,0,0,0.15); border-radius:10px; padding:0 10px;
   font-family:'Exo 2',sans-serif; font-size:13px; color:#333; outline:none;
 }
 .pi-input:focus { border-color:#ed7119; }
 .pi-select {
-  width:100%; height:34px;
+  width:100%; height:34px; appearance:none; cursor:pointer;
   background:rgba(255,255,255,0.7) url("https://www.figma.com/api/mcp/asset/b3403486-7cf4-45d9-aabd-2b2ded25845d") no-repeat right 10px center / 14px;
   border:1px solid rgba(0,0,0,0.15); border-radius:10px; padding:0 30px 0 10px;
   font-family:'Exo 2',sans-serif; font-size:13px; color:#333; outline:none;
-  appearance:none; cursor:pointer;
 }
-.pi-radio-row { display:flex; gap:16px; align-items:center; }
 .pi-radio-opt { display:flex; align-items:center; gap:6px; cursor:pointer;
   font-family:'Exo 2',sans-serif; font-size:13px; color:#333; }
-.pi-radio-opt input[type=radio] { accent-color:#ed7119; width:16px; height:16px; }
-#btn-next-step {
-  position:absolute; left:1114px; top:732px;
-  width:100px; height:66px;
-  background:none; border:none; cursor:pointer; padding:0;
+.pi-radio-opt input[type=radio] { accent-color:#ed7119; width:15px; height:15px; }
+.med-row {
+  display:grid; grid-template-columns:280px repeat(5,1fr);
+  align-items:center; padding:6px 0;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  font-family:'Exo 2',sans-serif; font-size:13px; color:#333;
 }
-#btn-next-step img { width:100%; height:100%; object-fit:contain; }
+.med-row label { font-weight:500; }
+.med-row input[type=radio] { accent-color:#ed7119; width:15px; height:15px; justify-self:center; }
+#btn-next-step {
+  position:absolute; left:1005px; top:1817px; width:212px; height:66px;
+  backdrop-filter:blur(28px); background:rgba(255,255,255,0.5); border:none;
+  border-radius:20px; cursor:pointer; padding:0;
+  box-shadow:10px 11px 37.6px rgba(0,0,0,0.25),
+    inset 0 0.9px 1.08px rgba(255,255,255,0.87),
+    inset 0 4px 16px rgba(255,255,255,0.2);
+  display:flex; align-items:center; justify-content:center;
+}
+#btn-next-step img { height:38px; object-fit:contain; }
 #pi-back-btn {
-  position:absolute; left:66px; top:732px;
-  width:131px; height:66px;
+  position:absolute; left:66px; top:1817px; width:131px; height:66px;
   border-radius:15px; border:none; cursor:pointer;
   display:flex; align-items:center; justify-content:flex-end;
   gap:8px; padding:14px 13px 14px 16px;
@@ -293,34 +257,27 @@ body {
 <body>
 <div id="app">
 
-<!-- ══════════════════════════════════
-     VIEW 1 : SPLASH  (1:1197)
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW 1 · SPLASH  (1:1197)
+══════════════════════════════════════ -->
 <div id="view-splash" class="view active">
   <div class="splash-root">
-    <!-- geometric logo (large, centred-left) -->
     <img class="splash-logo"
-      src="https://www.figma.com/api/mcp/asset/e03a8eba-b64e-4ef5-b6bf-22b2509e887e"
+      src="https://www.figma.com/api/mcp/asset/99fc4ee8-8fe1-42d8-a5bd-6e1c9ff5ca67"
       alt="Mnemosyne logo">
     <p class="splash-title">MNEMOSYNE</p>
-
-    <!-- Explore CTA -->
     <button id="btn-explore">
-      <img class="explore-bg"
-        src="https://www.figma.com/api/mcp/asset/1cd0508e-18f4-45c4-8c83-3e1f50085dd0"
-        alt="">
       <span class="explore-label">Explore</span>
       <img class="explore-icon"
-        src="https://www.figma.com/api/mcp/asset/957f42ce-2938-4b14-a339-94dcab7ae017"
-        alt="">
+        src="https://www.figma.com/api/mcp/asset/7037c700-62f3-4316-bb1a-d4479d818b94" alt="">
     </button>
   </div>
 </div>
 
 
-<!-- ══════════════════════════════════
-     VIEW 2 : HOME  (1:568)
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW 2 · HOME (1:882 — logged-in, user icon)
+══════════════════════════════════════ -->
 <div id="view-home" class="view">
   <div class="home-root">
 
@@ -329,47 +286,51 @@ body {
 
     <!-- hero photo -->
     <img style="position:absolute;left:482px;top:131px;width:737px;height:761px;border-radius:35px;opacity:0.8;object-fit:cover;"
-      src="https://www.figma.com/api/mcp/asset/1db262fd-4bf0-4ff2-9835-3c99bb511488" alt="hero">
+      src="https://www.figma.com/api/mcp/asset/af126f37-c513-4921-9c91-a5ebe0f85252" alt="">
 
-    <!-- ── logo ── -->
+    <!-- logo -->
     <div style="position:absolute;left:35px;top:15px;width:136px;height:37px;overflow:hidden;">
-      <img style="position:absolute;left:4px;top:4px;width:57px;height:22px;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/b70db286-ad72-498f-b3a9-15bd9ba9d6b8" alt="">
-      <img style="position:absolute;left:2px;top:10px;width:132px;height:25px;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/baa1d62d-9ec3-4d11-bc6b-ab9b55135ad3" alt="">
+      <img style="position:absolute;left:2px;top:2px;width:60px;height:24px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/0eb86ced-6f35-495d-b00d-b66eda7b20da" alt="">
+      <img style="position:absolute;left:0;bottom:0;width:134px;height:26px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/777db050-6f3b-4a94-b83e-9d3019a90265" alt="">
     </div>
     <p style="position:absolute;left:97.5px;top:55px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;text-align:center;white-space:nowrap;">MNEMOSYNE</p>
 
-    <!-- ── nav pills ── -->
-    <a class="home-nav-pill nav-design" href="#" style="left:310px;" onclick="return false;">DESIGN</a>
-    <button class="home-nav-pill" style="left:489px;">ABOUT</button>
-    <a class="home-nav-pill" href="#" style="left:616px;" onclick="return false;">WORKS</a>
-    <a class="home-nav-pill" href="#" style="left:796px;" onclick="return false;">COMMUNITY</a>
-    <a class="home-nav-pill" href="#" style="left:985px;" onclick="return false;">CONTACT</a>
-    <a class="home-nav-pill btn-logout" href="#" style="left:1143px;" onclick="return false;">SIGN UP</a>
+    <!-- nav (1:882 positions) -->
+    <a class="home-nav-pill nav-design" href="#" onclick="return false;" style="left:396px;">DESIGN</a>
+    <button class="home-nav-pill" style="left:575px;">ABOUT</button>
+    <a class="home-nav-pill" href="#" onclick="return false;" style="left:702px;">WORKS</a>
+    <a class="home-nav-pill" href="#" onclick="return false;" style="left:882px;">COMMUNITY</a>
+    <a class="home-nav-pill" href="#" onclick="return false;" style="left:1071px;">CONTACT</a>
 
-    <!-- ── hero text ── -->
-    <div style="position:absolute;left:39px;top:219px;width:421px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:52px;color:#fff;text-align:right;line-height:1.1;">
+    <!-- user icon (logout) -->
+    <img src="https://www.figma.com/api/mcp/asset/cbc851ff-98f2-4b3f-867b-31b442b81653"
+      alt="user" class="btn-logout"
+      style="position:absolute;left:1217px;top:34px;width:25px;height:25px;cursor:pointer;object-fit:contain;">
+
+    <!-- hero text -->
+    <div style="position:absolute;right:820px;top:219px;width:421px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:52px;color:#fff;text-align:right;line-height:1.1;">
       <p>REFINE YOUR</p>
       <p>NEW LIFE</p>
     </div>
 
-    <!-- hero paragraph -->
-    <p style="position:absolute;left:69px;top:400px;width:381px;font-family:'Orbitron',sans-serif;font-weight:600;font-size:16px;color:#fff;line-height:1.2;letter-spacing:-0.32px;">
+    <!-- hero paragraph (1:882: left:159 top:406 w:314) -->
+    <p style="position:absolute;left:159px;top:406px;width:314px;font-family:'Orbitron',sans-serif;font-weight:600;font-size:16px;color:#fff;line-height:1.2;letter-spacing:-0.32px;">
       As populations age, elderly increasingly face daily challenges that homes and products were never designed to accommodate. Many struggle not because of severe illness, but because ordinary environments fail to support their changing bodies and emotional needs. Mnemosyne is dedicated to improving this issue.
     </p>
 
-    <!-- DISCOVER NOW button -->
-    <a href="#" onclick="return false;" style="position:absolute;left:107px;top:596px;width:281px;height:59px;display:flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:46px;background:rgba(0,0,0,0.1);box-shadow:0 4px 4px rgba(0,0,0,0.25);text-decoration:none;">
+    <!-- DISCOVER NOW (1:882: left:169 top:648) -->
+    <a href="#" onclick="return false;" style="position:absolute;left:169px;top:648px;width:281px;height:59px;display:flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:46px;background:rgba(0,0,0,0.1);box-shadow:0 4px 4px rgba(0,0,0,0.25);text-decoration:none;">
       <span style="font-family:'Orbitron',sans-serif;font-weight:800;font-size:24px;color:#fff;">DISCOVER NOW</span>
     </a>
 
     <!-- slider dots -->
     <img style="position:absolute;left:812px;top:860px;width:78px;height:18px;object-fit:contain;"
-      src="https://www.figma.com/api/mcp/asset/bce6f538-a4c3-41bf-99bc-e7658547eba2" alt="">
+      src="https://www.figma.com/api/mcp/asset/f683c0ee-a429-4aa3-9126-3b69072e3197" alt="">
 
-    <!-- ── About section ── -->
-    <div class="home-glass-bg" style="left:38px;top:1009px;width:1207px;height:338px;opacity:1;"></div>
+    <!-- About section -->
+    <div class="home-glass-bg" style="left:38px;top:1009px;width:1207px;height:338px;"></div>
     <p style="position:absolute;left:101.5px;top:1042px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;white-space:nowrap;">ABOUT US</p>
     <div style="position:absolute;left:65px;top:1067px;width:493px;font-family:'Orbitron',sans-serif;font-size:11px;color:#fff;line-height:1.5;">
       <p><strong>RC5 – Mnemosyne Team</strong><br>
@@ -379,150 +340,152 @@ body {
       <p style="margin-top:8px;">To address this, we developed the Mnemosyne System, a design framework that transforms architectural space into a modular, responsive living product. By integrating spatial modules with user-based data, the system can automatically generate and recombine living environments tailored to the changing physical conditions of elderly residents.</p>
     </div>
 
-    <!-- ── Instagram section ── -->
-    <div class="home-glass-bg" style="left:38px;top:1426px;width:1207px;height:338px;opacity:1;"></div>
-    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:66px;top:1721px;display:block;width:24px;height:24px;">
+    <!-- Instagram section -->
+    <div class="home-glass-bg" style="left:38px;top:1426px;width:1207px;height:338px;"></div>
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank"
+      style="position:absolute;left:66px;top:1721px;display:block;width:24px;height:24px;">
       <img style="width:100%;height:100%;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/1e34f2ac-6142-47f0-90f4-42ba36ef52c0" alt="instagram">
+        src="https://www.figma.com/api/mcp/asset/eb371ee3-40be-43eb-bf1d-6559bb7d060d" alt="instagram">
     </a>
-    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:99px;top:1728px;display:block;width:70px;height:17px;">
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank"
+      style="position:absolute;left:99px;top:1728px;display:block;width:70px;height:17px;">
       <img style="width:100%;height:100%;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/ab0fd5f0-1e26-4fbd-bf72-d29b475347c7" alt="Instagram">
+        src="https://www.figma.com/api/mcp/asset/2a699f84-1dc7-4a14-8d9f-74fe78b9485a" alt="Instagram">
     </a>
 
-    <!-- ── Gallery section (stacked cards) ── -->
-    <!-- Stack 1 -->
-    <div style="position:absolute;left:232px;top:2200px;width:381px;height:230px;transform:rotate(-12.63deg);">
-      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
-    </div>
-    <div style="position:absolute;left:268px;top:2252px;width:342px;height:166px;transform:rotate(-12.63deg);">
-      <div style="position:absolute;inset:0;background:#fff;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
-      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    <!-- Gallery cards (from Figma: starts ~top:3408) -->
+    <!-- Stack 1 (rotated) -->
+    <div style="position:absolute;left:232px;top:3409px;width:381px;height:230px;transform:rotate(-12.63deg);background:rgba(217,217,217,0.3);border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+    <div style="position:absolute;left:268px;top:3462px;width:342px;height:166px;transform:rotate(-12.63deg);background:#fff;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Orbitron',sans-serif;font-size:20px;color:#555;transform:rotate(12.63deg);">GALLERY</span>
     </div>
     <!-- Stack 2 -->
-    <div style="position:absolute;left:678px;top:2238px;width:381px;height:230px;">
-      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
-    </div>
-    <div style="position:absolute;left:703px;top:2289px;width:342px;height:166px;">
-      <div style="position:absolute;inset:0;background:#fff;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
-      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    <div style="position:absolute;left:677px;top:3448px;width:381px;height:230px;background:rgba(217,217,217,0.3);border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+    <div style="position:absolute;left:702px;top:3499px;width:342px;height:166px;background:#fff;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Orbitron',sans-serif;font-size:20px;color:#555;">GALLERY</span>
     </div>
     <!-- Stack 3 -->
-    <div style="position:absolute;left:752px;top:2280px;width:381px;height:230px;">
-      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
-    </div>
-    <div style="position:absolute;left:777px;top:2331px;width:342px;height:166px;">
-      <div style="position:absolute;inset:0;background:#ccc;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
-      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    <div style="position:absolute;left:751px;top:3490px;width:381px;height:230px;background:rgba(217,217,217,0.3);border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+    <div style="position:absolute;left:776px;top:3541px;width:342px;height:166px;background:#ccc;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;">GALLERY</span>
     </div>
     <!-- Stack 4 -->
-    <div style="position:absolute;left:854px;top:2349px;width:381px;height:230px;">
-      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
-    </div>
-    <div style="position:absolute;left:879px;top:2400px;width:342px;height:166px;">
-      <div style="position:absolute;inset:0;background:#aaa7a7;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
-      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    <div style="position:absolute;left:853px;top:3559px;width:381px;height:230px;background:rgba(217,217,217,0.3);border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+    <div style="position:absolute;left:878px;top:3610px;width:342px;height:166px;background:#aaa7a7;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;">GALLERY</span>
     </div>
     <!-- Stack 5 -->
-    <div style="position:absolute;left:942px;top:2451px;width:381px;height:230px;">
-      <div class="home-gallery-card" style="position:absolute;inset:0;background:rgba(217,217,217,0.3);"></div>
-    </div>
-    <div style="position:absolute;left:967px;top:2502px;width:342px;height:166px;">
-      <div style="position:absolute;inset:0;background:#707070;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
-      <p style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;white-space:nowrap;">GALLERY</p>
+    <div style="position:absolute;left:941px;top:3661px;width:381px;height:230px;background:rgba(217,217,217,0.3);border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);"></div>
+    <div style="position:absolute;left:966px;top:3712px;width:342px;height:166px;background:#707070;border-radius:38px;border:1px solid #e7e7e7;backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Orbitron',sans-serif;font-size:20px;color:#fff;">GALLERY</span>
     </div>
 
   </div>
 </div>
 
 
-<!-- ══════════════════════════════════
-     VIEW 3 : HOME V2  (1:882) — same content
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW 3 · HOME V2 (1:568 — pre-login, SIGN UP pill)
+══════════════════════════════════════ -->
 <div id="view-home2" class="view">
   <div class="home-root">
+
     <div class="home-glass-bg" style="left:35px;top:95px;width:1207px;height:825px;opacity:0.42;"></div>
+
     <img style="position:absolute;left:482px;top:131px;width:737px;height:761px;border-radius:35px;opacity:0.8;object-fit:cover;"
-      src="https://www.figma.com/api/mcp/asset/f43b78d3-37fd-4fc2-9715-b30ea30bc305" alt="hero">
+      src="https://www.figma.com/api/mcp/asset/eaf44e60-9a5e-43c8-8b32-13baaf210d39" alt="">
+
     <div style="position:absolute;left:35px;top:15px;width:136px;height:37px;overflow:hidden;">
-      <img style="position:absolute;left:4px;top:4px;width:57px;height:22px;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/e7778832-6f40-411b-a0ca-e802f9354faf" alt="">
-      <img style="position:absolute;left:2px;top:10px;width:132px;height:25px;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/d44f3229-f46d-4c4c-a0fb-b5d48423fd8e" alt="">
+      <img style="position:absolute;left:2px;top:2px;width:60px;height:24px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/d97a42e2-e667-47a6-85de-7d85c7c7728f" alt="">
+      <img style="position:absolute;left:0;bottom:0;width:134px;height:26px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/4c9cec37-8214-4216-8f5b-9e278b87b4b0" alt="">
     </div>
     <p style="position:absolute;left:97.5px;top:55px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;text-align:center;white-space:nowrap;">MNEMOSYNE</p>
-    <a class="home-nav-pill nav-design" href="#" style="left:310px;" onclick="return false;">DESIGN</a>
+
+    <!-- nav (1:568 positions) -->
+    <a class="home-nav-pill nav-design" href="#" onclick="return false;" style="left:310px;">DESIGN</a>
     <button class="home-nav-pill" style="left:489px;">ABOUT</button>
-    <a class="home-nav-pill" href="#" style="left:616px;" onclick="return false;">WORKS</a>
-    <a class="home-nav-pill" href="#" style="left:796px;" onclick="return false;">COMMUNITY</a>
-    <a class="home-nav-pill" href="#" style="left:985px;" onclick="return false;">CONTACT</a>
-    <a class="home-nav-pill btn-logout" href="#" style="left:1143px;" onclick="return false;">SIGN UP</a>
-    <div style="position:absolute;left:39px;top:219px;width:421px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:52px;color:#fff;text-align:right;line-height:1.1;">
+    <a class="home-nav-pill" href="#" onclick="return false;" style="left:616px;">WORKS</a>
+    <a class="home-nav-pill" href="#" onclick="return false;" style="left:796px;">COMMUNITY</a>
+    <a class="home-nav-pill" href="#" onclick="return false;" style="left:985px;">CONTACT</a>
+    <a class="home-nav-pill btn-logout" href="#" onclick="return false;" style="left:1143px;">SIGN UP</a>
+
+    <div style="position:absolute;right:820px;top:219px;width:421px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:52px;color:#fff;text-align:right;line-height:1.1;">
       <p>REFINE YOUR</p><p>NEW LIFE</p>
     </div>
+
+    <!-- paragraph (1:568: left:69 top:400 w:381) -->
     <p style="position:absolute;left:69px;top:400px;width:381px;font-family:'Orbitron',sans-serif;font-weight:600;font-size:16px;color:#fff;line-height:1.2;letter-spacing:-0.32px;">
       As populations age, elderly increasingly face daily challenges that homes and products were never designed to accommodate. Many struggle not because of severe illness, but because ordinary environments fail to support their changing bodies and emotional needs. Mnemosyne is dedicated to improving this issue.
     </p>
+
+    <!-- DISCOVER NOW (1:568: left:107 top:596) -->
     <a href="#" onclick="return false;" style="position:absolute;left:107px;top:596px;width:281px;height:59px;display:flex;align-items:center;justify-content:center;border:1px solid #fff;border-radius:46px;background:rgba(0,0,0,0.1);box-shadow:0 4px 4px rgba(0,0,0,0.25);text-decoration:none;">
       <span style="font-family:'Orbitron',sans-serif;font-weight:800;font-size:24px;color:#fff;">DISCOVER NOW</span>
     </a>
+
     <img style="position:absolute;left:812px;top:860px;width:78px;height:18px;object-fit:contain;"
-      src="https://www.figma.com/api/mcp/asset/c9f5859f-ccf9-4c4c-b196-c83f279b9443" alt="">
-    <div class="home-glass-bg" style="left:38px;top:1009px;width:1207px;height:338px;opacity:1;"></div>
+      src="https://www.figma.com/api/mcp/asset/d35eceab-8d45-4c1c-81be-10de45575266" alt="">
+
+    <div class="home-glass-bg" style="left:38px;top:1009px;width:1207px;height:338px;"></div>
     <p style="position:absolute;left:101.5px;top:1042px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:12px;color:#fff;white-space:nowrap;">ABOUT US</p>
     <div style="position:absolute;left:65px;top:1067px;width:493px;font-family:'Orbitron',sans-serif;font-size:11px;color:#fff;line-height:1.5;">
-      <p><strong>RC5 – Mnemosyne Team</strong><br><span style="font-weight:500;">The Bartlett School of Architecture, UCL</span></p>
-      <p style="margin-top:8px;">Our research focuses on aging societies and the spatial challenges faced by elderly communities. As physical ability and daily routines change over time, conventional housing often fails to adapt to the evolving needs of its residents. We ask a fundamental question:</p>
+      <p><strong>RC5 – Mnemosyne Team</strong><br>
+      <span style="font-weight:500;">The Bartlett School of Architecture, UCL</span></p>
+      <p style="margin-top:8px;">Our research focuses on aging societies and the spatial challenges faced by elderly communities. As physical ability and daily routines change over time, conventional housing often fails to adapt to the evolving needs of its residents.</p>
       <p style="margin-top:8px;">Can architecture behave like a product—capable of adapting, updating, and reconfiguring according to the user?</p>
       <p style="margin-top:8px;">To address this, we developed the Mnemosyne System, a design framework that transforms architectural space into a modular, responsive living product.</p>
     </div>
-    <div class="home-glass-bg" style="left:38px;top:1426px;width:1207px;height:338px;opacity:1;"></div>
-    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:66px;top:1721px;display:block;width:24px;height:24px;">
+
+    <div class="home-glass-bg" style="left:38px;top:1426px;width:1207px;height:338px;"></div>
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank"
+      style="position:absolute;left:66px;top:1721px;display:block;width:24px;height:24px;">
       <img style="width:100%;height:100%;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/fc4cc045-7a0a-4f39-aa18-bdb121551041" alt="">
+        src="https://www.figma.com/api/mcp/asset/38b0203e-37f7-4686-bb85-e6bccc8f4114" alt="instagram">
     </a>
-    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank" style="position:absolute;left:99px;top:1728px;display:block;width:70px;height:17px;">
+    <a href="https://www.instagram.com/ad_rc5_groupc" target="_blank"
+      style="position:absolute;left:99px;top:1728px;display:block;width:70px;height:17px;">
       <img style="width:100%;height:100%;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/5a2fc299-3d8d-4938-a485-5eb29fd8da4f" alt="">
+        src="https://www.figma.com/api/mcp/asset/60bce0e0-bc38-4a6c-aed1-ec250ce6e2cd" alt="Instagram">
     </a>
+
   </div>
 </div>
 
 
-<!-- ══════════════════════════════════
-     VIEW 4 : LOGIN  (1:1205)
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW 4 · LOGIN  (1:1205)
+══════════════════════════════════════ -->
 <div id="view-login" class="view">
   <div class="login-root">
 
     <!-- logo left side -->
     <div style="position:absolute;left:34px;top:301px;width:636px;height:171px;overflow:hidden;">
-      <img style="position:absolute;left:20px;top:20px;width:280px;height:100px;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/fc47d9fa-9aec-4e65-93e6-805aed595f16" alt="">
-      <img style="position:absolute;left:3px;top:46px;width:630px;height:120px;object-fit:contain;"
-        src="https://www.figma.com/api/mcp/asset/a8a9099d-983b-4ee2-bed2-97ff43d77e4d" alt="">
+      <img style="position:absolute;left:16px;top:18px;width:260px;height:90px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/153a1125-615e-4efe-8aff-25fda674e40b" alt="">
+      <img style="position:absolute;left:2px;top:44px;width:630px;height:122px;object-fit:contain;"
+        src="https://www.figma.com/api/mcp/asset/5b33f7d6-d1f5-4add-8c62-df72058a682f" alt="">
     </div>
     <p style="position:absolute;left:349px;top:510px;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-weight:800;font-size:16px;color:#fff;white-space:nowrap;letter-spacing:0.08em;">MNEMOSYNE</p>
 
-    <!-- glass card -->
+    <!-- glass card (left:713 top:82 w:529 h:667) -->
     <div class="login-card">
 
-      <!-- Welcome to -->
       <p style="position:absolute;left:26px;top:56px;font-family:'Inter',sans-serif;font-weight:700;font-size:36px;color:#fff;white-space:nowrap;">Welcome to</p>
-      <!-- Mnemosyne orange -->
-      <p style="position:absolute;left:26px;top:102px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:52px;color:#ed7119;white-space:nowrap;">Mnemosyne</p>
+      <p style="position:absolute;left:26px;top:110px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:48px;color:#ed7119;white-space:nowrap;">Mnemosyne</p>
 
       <!-- Email -->
       <label style="position:absolute;left:26px;top:176px;font-family:'Poppins',sans-serif;font-size:16px;color:#fff;">Email</label>
-      <input id="login-email" class="login-input" type="email" placeholder=""
+      <input id="login-email" class="login-input" type="email"
         style="position:absolute;left:26px;top:206px;width:465px;height:36px;">
 
       <!-- Password -->
       <label style="position:absolute;left:26px;top:249px;font-family:'Poppins',sans-serif;font-size:16px;color:#fff;">Password</label>
-      <input id="login-password" class="login-input" type="password" placeholder=""
+      <input id="login-password" class="login-input" type="password"
         style="position:absolute;left:26px;top:279px;width:465px;height:37px;">
 
-      <!-- Terms checkbox -->
+      <!-- Terms -->
       <div style="position:absolute;left:26px;top:334px;display:flex;align-items:flex-start;gap:8px;width:465px;">
         <input type="checkbox" id="terms-check" style="margin-top:3px;accent-color:#ed7119;width:16px;height:16px;flex-shrink:0;">
         <label for="terms-check" style="font-family:'Poppins',sans-serif;font-size:14px;color:#b5b5b5;line-height:1.4;">
@@ -532,36 +495,31 @@ body {
         </label>
       </div>
 
-      <!-- LOGIN button -->
+      <!-- LOGIN button (card-relative: left:212 top:407 = frame 925,489) -->
       <button id="btn-email-login">
         LOGIN
-        <img src="https://www.figma.com/api/mcp/asset/f1626c71-f79d-4048-b038-66efd3a1e17d"
-          style="width:17px;height:7px;transform:rotate(180deg)scaleY(-1);" alt="→">
+        <img src="https://www.figma.com/api/mcp/asset/ce7c19dc-4321-46d2-a42c-f5d53a040898"
+          style="width:17px;height:8px;" alt="→">
       </button>
 
-      <!-- Create account button -->
+      <!-- Create account -->
       <button id="btn-create-account">Create an account</button>
 
       <!-- OR divider -->
-      <div style="position:absolute;left:26px;top:533px;width:465px;display:flex;align-items:center;gap:23px;">
+      <div style="position:absolute;left:26px;top:533px;width:465px;display:flex;align-items:center;gap:18px;">
         <div style="flex:1;height:2px;background:rgba(195,195,195,0.25);"></div>
         <span style="font-family:'Arial',sans-serif;font-style:italic;font-size:24px;color:#fff;flex-shrink:0;">OR</span>
         <div style="flex:1;height:2px;background:rgba(195,195,195,0.25);"></div>
       </div>
 
-      <!-- Continue with Google -->
+      <!-- Continue with Google (card-relative: left:37 top:577 = frame 750,659) -->
       <button id="googleLoginBtn">
-        <!-- Google G icon (4-colour vectors) -->
-        <span class="google-icon">
-          <img src="https://www.figma.com/api/mcp/asset/5c2512fe-a114-4508-aebe-d0f0ea492fad"
-            style="inset:41% 6% 17% 51%;width:43%;height:42%;" alt="">
-          <img src="https://www.figma.com/api/mcp/asset/031c66f7-cbb0-4745-9194-92090712de4f"
-            style="inset:59% 20% 6% 11%;width:69%;height:35%;" alt="">
-          <img src="https://www.figma.com/api/mcp/asset/15f363d7-7150-43a7-8a70-469c7f4bbec8"
-            style="inset:30% 75% 30% 6%;width:19%;height:40%;" alt="">
-          <img src="https://www.figma.com/api/mcp/asset/881e9e3a-80e4-45de-a137-16d0e0ed7951"
-            style="inset:6% 19% 59% 11%;width:70%;height:35%;" alt="">
-        </span>
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
         Continue with Google
       </button>
 
@@ -570,9 +528,9 @@ body {
 </div>
 
 
-<!-- ══════════════════════════════════
-     VIEW 5 : PERSONAL INFO FORM  (1:2430)
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW 5 · PERSONAL INFO  (1:2430)
+══════════════════════════════════════ -->
 <div id="view-personal-info" class="view">
   <div class="pi-root">
 
@@ -581,9 +539,9 @@ body {
       <a class="pi-logo-link" href="#">
         <div class="pi-logo-wrap">
           <img class="pi-logo-img8"
-            src="https://www.figma.com/api/mcp/asset/73205c9b-d8cd-49da-8fa1-6596e54f2b86" alt="">
+            src="https://www.figma.com/api/mcp/asset/0eb86ced-6f35-495d-b00d-b66eda7b20da" alt="">
           <img class="pi-logo-img10"
-            src="https://www.figma.com/api/mcp/asset/bf064f10-263e-4239-807f-864ab821d134" alt="">
+            src="https://www.figma.com/api/mcp/asset/777db050-6f3b-4a94-b83e-9d3019a90265" alt="">
         </div>
         <p class="pi-logo-text">MNEMOSYNE</p>
       </a>
@@ -595,50 +553,53 @@ body {
         <a class="pi-nav-pill" href="#" onclick="return false;">CONTACT</a>
       </nav>
       <img class="pi-user-icon btn-logout"
-        src="https://www.figma.com/api/mcp/asset/f6ab2afc-3093-4b8b-9dad-f4a9debdd7ce" alt="user"
-        style="cursor:pointer;">
+        src="https://www.figma.com/api/mcp/asset/cbc851ff-98f2-4b3f-867b-31b442b81653" alt="user">
     </header>
 
-    <!-- progress bar — step 1 active -->
+    <!-- progress — step 1 active -->
     <div class="pi-progress-wrap">
       <div class="pi-prog-line"></div>
       <div class="pi-prog-step" style="left:188px;">
-        <div class="pi-prog-dot active"><span>1</span></div>
+        <div class="pi-prog-dot active">1</div>
         <div class="pi-prog-label"><strong>Personal<br>Information</strong></div>
       </div>
       <div class="pi-prog-step" style="left:479px;">
-        <div class="pi-prog-dot inactive"><span>2</span></div>
+        <div class="pi-prog-dot inactive">2</div>
         <div class="pi-prog-label">Select<br>Furniture</div>
       </div>
       <div class="pi-prog-step" style="left:770px;">
-        <div class="pi-prog-dot inactive"><span>3</span></div>
+        <div class="pi-prog-dot inactive">3</div>
         <div class="pi-prog-label">Select<br>Layout</div>
       </div>
       <div class="pi-prog-step" style="left:1061px;">
-        <div class="pi-prog-dot inactive"><span>4</span></div>
+        <div class="pi-prog-dot inactive">4</div>
         <div class="pi-prog-label">Preview</div>
       </div>
     </div>
 
-    <!-- form separator line -->
+    <!-- separator -->
     <div style="position:absolute;left:66px;right:63px;top:191px;height:1px;background:rgba(0,0,0,0.18);"></div>
 
-    <!-- ── Left card: Personal Details ── -->
-    <div class="pi-card" style="left:76px;top:210px;width:534px;height:490px;padding:24px;">
-      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:18px;">Personal Details</p>
+    <!-- info notice (left:66 top:223 w:949 h:54) -->
+    <div style="position:absolute;left:66px;top:223px;width:949px;height:54px;background:rgba(201,148,108,0.3);border-radius:12px;display:flex;align-items:center;padding:0 20px;">
+      <p style="font-family:'Exo 2',sans-serif;font-size:14px;color:#555;">Please fill in your personal details so we can tailor your living space recommendations.</p>
+    </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;">
+    <!-- ── Left form card ── -->
+    <div class="pi-card" style="left:76px;top:290px;width:534px;height:450px;padding:22px 24px;">
+      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:16px;">Personal Details</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;">
         <div>
           <label class="pi-field-label">First Name <span class="req">*</span></label>
-          <input class="pi-input" type="text" placeholder="Enter first name">
+          <input class="pi-input" type="text" placeholder="First name">
         </div>
         <div>
           <label class="pi-field-label">Last Name <span class="req">*</span></label>
-          <input class="pi-input" type="text" placeholder="Enter last name">
+          <input class="pi-input" type="text" placeholder="Last name">
         </div>
         <div>
-          <label class="pi-field-label">Date of Birth <span class="req">*</span></label>
-          <input class="pi-input" type="date">
+          <label class="pi-field-label">Age <span class="req">*</span></label>
+          <input class="pi-input" type="number" placeholder="Age" min="0" max="120">
         </div>
         <div>
           <label class="pi-field-label">Gender</label>
@@ -647,105 +608,136 @@ body {
             <option>Male</option><option>Female</option><option>Other</option>
           </select>
         </div>
-        <div style="grid-column:1/-1;">
-          <label class="pi-field-label">Address <span class="req">*</span></label>
-          <input class="pi-input" type="text" placeholder="Street address">
-        </div>
-        <div>
-          <label class="pi-field-label">City</label>
-          <input class="pi-input" type="text" placeholder="City">
-        </div>
-        <div>
-          <label class="pi-field-label">Postcode</label>
-          <input class="pi-input" type="text" placeholder="Postcode">
-        </div>
         <div>
           <label class="pi-field-label">Phone Number</label>
-          <input class="pi-input" type="tel" placeholder="+44">
+          <input class="pi-input" type="tel" placeholder="+44 …">
         </div>
         <div>
-          <label class="pi-field-label">Email</label>
-          <input class="pi-input" type="email" placeholder="your@email.com">
+          <label class="pi-field-label">Emergency Contact</label>
+          <input class="pi-input" type="tel" placeholder="+44 …">
+        </div>
+        <div>
+          <label class="pi-field-label">Family Members</label>
+          <input class="pi-input" type="number" placeholder="Number" min="1">
+        </div>
+        <div>
+          <label class="pi-field-label">Living Style</label>
+          <select class="pi-select">
+            <option value="">Select</option>
+            <option>Alone</option><option>With family</option><option>With carer</option>
+          </select>
         </div>
         <div style="grid-column:1/-1;">
-          <label class="pi-field-label">Emergency Contact Name</label>
-          <input class="pi-input" type="text" placeholder="Full name">
+          <label class="pi-field-label">Residential Area</label>
+          <input class="pi-input" type="text" placeholder="City / region">
         </div>
         <div style="grid-column:1/-1;">
-          <label class="pi-field-label">Emergency Contact Phone</label>
-          <input class="pi-input" type="tel" placeholder="+44">
+          <label class="pi-field-label">Neighbour Interaction</label>
+          <select class="pi-select">
+            <option value="">Select</option>
+            <option>Very active</option><option>Occasional</option><option>Minimal</option>
+          </select>
         </div>
       </div>
     </div>
 
-    <!-- ── Right card: Health & Mobility ── -->
-    <div class="pi-card" style="left:670px;top:210px;width:534px;height:490px;padding:24px;">
-      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:18px;">Health & Mobility</p>
-
-      <div style="display:flex;flex-direction:column;gap:16px;">
+    <!-- ── Right form card ── -->
+    <div class="pi-card" style="left:670px;top:290px;width:544px;height:450px;padding:22px 24px;">
+      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:16px;">Mobility & Lifestyle</p>
+      <div style="display:flex;flex-direction:column;gap:14px;">
         <div>
           <label class="pi-field-label">Mobility Level <span class="req">*</span></label>
-          <div class="pi-radio-row" style="margin-top:6px;">
-            <label class="pi-radio-opt"><input type="radio" name="mobility" value="full"> Full mobility</label>
+          <div style="display:flex;gap:16px;margin-top:6px;">
+            <label class="pi-radio-opt"><input type="radio" name="mobility" value="full"> Full</label>
             <label class="pi-radio-opt"><input type="radio" name="mobility" value="limited"> Limited</label>
             <label class="pi-radio-opt"><input type="radio" name="mobility" value="wheelchair"> Wheelchair</label>
+            <label class="pi-radio-opt"><input type="radio" name="mobility" value="bedridden"> Bedridden</label>
           </div>
         </div>
         <div>
           <label class="pi-field-label">Walking Aid</label>
-          <div class="pi-radio-row" style="margin-top:6px;">
+          <div style="display:flex;gap:16px;margin-top:6px;">
             <label class="pi-radio-opt"><input type="radio" name="aid" value="none"> None</label>
             <label class="pi-radio-opt"><input type="radio" name="aid" value="cane"> Cane</label>
             <label class="pi-radio-opt"><input type="radio" name="aid" value="walker"> Walker</label>
+            <label class="pi-radio-opt"><input type="radio" name="aid" value="rollator"> Rollator</label>
           </div>
         </div>
         <div>
-          <label class="pi-field-label">Medical Conditions</label>
-          <textarea style="width:100%;height:72px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:8px 10px;font-family:'Exo 2',sans-serif;font-size:13px;color:#333;resize:none;outline:none;" placeholder="List any relevant conditions…"></textarea>
-        </div>
-        <div>
           <label class="pi-field-label">Current Medications</label>
-          <input class="pi-input" type="text" placeholder="Optional">
+          <input class="pi-input" type="text" placeholder="List medications (optional)">
         </div>
         <div>
-          <label class="pi-field-label">Upload Medical Documents</label>
-          <label style="display:flex;align-items:center;gap:8px;width:100%;height:34px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:0 10px;cursor:pointer;font-family:'Exo 2',sans-serif;font-size:13px;color:#888;">
-            <img src="https://www.figma.com/api/mcp/asset/c483da18-ba8b-42d6-b5f7-1c067eb96de0"
-              style="width:16px;height:16px;object-fit:contain;" alt="">
-            Choose file…
-            <input type="file" style="display:none;">
-          </label>
+          <label class="pi-field-label">Dietary Requirements</label>
+          <input class="pi-input" type="text" placeholder="e.g. vegetarian, diabetic diet">
         </div>
         <div>
           <label class="pi-field-label">Additional Notes</label>
-          <textarea style="width:100%;height:52px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:8px 10px;font-family:'Exo 2',sans-serif;font-size:13px;color:#333;resize:none;outline:none;" placeholder="Anything else we should know…"></textarea>
+          <textarea style="width:100%;height:80px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.15);border-radius:10px;padding:8px 10px;font-family:'Exo 2',sans-serif;font-size:13px;color:#333;resize:none;outline:none;" placeholder="Anything else we should know…"></textarea>
         </div>
       </div>
     </div>
 
-    <!-- back button -->
+    <!-- ── Medical / Health Assessment (top:769) ── -->
+    <div style="position:absolute;left:66px;top:769px;width:1151px;background:rgba(201,148,108,0.3);border-radius:20px;padding:24px 30px 30px;">
+      <p style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;color:#333;margin-bottom:16px;">Health Assessment</p>
+      <!-- column headers -->
+      <div class="med-row" style="border-bottom:2px solid rgba(0,0,0,0.12);padding-bottom:8px;margin-bottom:4px;">
+        <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:#555;">Condition</span>
+        <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:#555;text-align:center;">None</span>
+        <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:#555;text-align:center;">Mild</span>
+        <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:#555;text-align:center;">Moderate</span>
+        <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:#555;text-align:center;">Severe</span>
+        <span style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:#555;text-align:center;">N/A</span>
+      </div>
+      <!-- rows -->
+      <div class="med-row"><label>Vision Impairment</label>
+        <input type="radio" name="h1" value="none"><input type="radio" name="h1" value="mild"><input type="radio" name="h1" value="mod"><input type="radio" name="h1" value="severe"><input type="radio" name="h1" value="na">
+      </div>
+      <div class="med-row"><label>Hearing Loss</label>
+        <input type="radio" name="h2" value="none"><input type="radio" name="h2" value="mild"><input type="radio" name="h2" value="mod"><input type="radio" name="h2" value="severe"><input type="radio" name="h2" value="na">
+      </div>
+      <div class="med-row"><label>Memory / Cognitive Issues</label>
+        <input type="radio" name="h3" value="none"><input type="radio" name="h3" value="mild"><input type="radio" name="h3" value="mod"><input type="radio" name="h3" value="severe"><input type="radio" name="h3" value="na">
+      </div>
+      <div class="med-row"><label>Cardiovascular Conditions</label>
+        <input type="radio" name="h4" value="none"><input type="radio" name="h4" value="mild"><input type="radio" name="h4" value="mod"><input type="radio" name="h4" value="severe"><input type="radio" name="h4" value="na">
+      </div>
+      <div class="med-row"><label>Diabetes</label>
+        <input type="radio" name="h5" value="none"><input type="radio" name="h5" value="mild"><input type="radio" name="h5" value="mod"><input type="radio" name="h5" value="severe"><input type="radio" name="h5" value="na">
+      </div>
+      <div class="med-row"><label>Arthritis / Joint Pain</label>
+        <input type="radio" name="h6" value="none"><input type="radio" name="h6" value="mild"><input type="radio" name="h6" value="mod"><input type="radio" name="h6" value="severe"><input type="radio" name="h6" value="na">
+      </div>
+      <div class="med-row"><label>Balance / Fall Risk</label>
+        <input type="radio" name="h7" value="none"><input type="radio" name="h7" value="mild"><input type="radio" name="h7" value="mod"><input type="radio" name="h7" value="severe"><input type="radio" name="h7" value="na">
+      </div>
+      <div class="med-row"><label>Respiratory Conditions</label>
+        <input type="radio" name="h8" value="none"><input type="radio" name="h8" value="mild"><input type="radio" name="h8" value="mod"><input type="radio" name="h8" value="severe"><input type="radio" name="h8" value="na">
+      </div>
+      <div class="med-row" style="border-bottom:none;"><label>Depression / Anxiety</label>
+        <input type="radio" name="h9" value="none"><input type="radio" name="h9" value="mild"><input type="radio" name="h9" value="mod"><input type="radio" name="h9" value="severe"><input type="radio" name="h9" value="na">
+      </div>
+    </div>
+
+    <!-- back & next buttons (top:1817) -->
     <button id="pi-back-btn">
-      <img src="https://www.figma.com/api/mcp/asset/e04815de-b2d1-4f7c-a5ee-4ed427966bfb"
-        style="width:31px;height:24px;object-fit:contain;transform:rotate(180deg)scaleY(-1);" alt="←">
       <span>Back</span>
     </button>
-
-    <!-- next step button -->
     <button id="btn-next-step">
-      <img src="https://www.figma.com/api/mcp/asset/d9a1c23a-997a-4110-b173-393196842d8e" alt="Next Step">
+      <img src="https://www.figma.com/api/mcp/asset/b6fd818b-cb26-4394-8b5f-fa781c488519" alt="Next Step">
     </button>
 
   </div>
 </div>
 
 
-<!-- ══════════════════════════════════
-     VIEW 6 : 3D PREVIEW  (8:810)
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW 6 · 3D PREVIEW  (8:810)
+══════════════════════════════════════ -->
 <div id="view-preview" class="view">
 <div id="page">
 
-  <!-- ── NAVBAR ── -->
   <header id="navbar">
     <a id="logo-link" href="#">
       <div id="logo-wrap">
@@ -763,7 +755,6 @@ body {
     <img id="user-icon" src="https://www.figma.com/api/mcp/asset/31d38bf5-b942-41bb-9f37-f6c5f7805e64" alt="user">
   </header>
 
-  <!-- ── PROGRESS STEPS ── -->
   <div id="progress-wrap">
     <div class="prog-line full-line"></div>
     <div class="prog-step" style="left:188px">
@@ -784,7 +775,6 @@ body {
     </div>
   </div>
 
-  <!-- ── 3D VIEWER ── -->
   <div id="viewer-wrap">
     <canvas id="three-canvas"></canvas>
     <div id="loading-overlay">
@@ -794,7 +784,6 @@ body {
     <div id="click-hint">Click a component to inspect</div>
   </div>
 
-  <!-- ── LEFT CONTROL CARDS ── -->
   <div id="left-controls">
     <button class="ctrl-card" id="btn-lighting">
       <span class="ctrl-icon">
@@ -816,7 +805,6 @@ body {
     </button>
   </div>
 
-  <!-- ── RIGHT CONTROL CARDS ── -->
   <div id="right-controls">
     <button class="ctrl-card" id="btn-time">
       <span class="ctrl-icon">
@@ -838,7 +826,6 @@ body {
     </button>
   </div>
 
-  <!-- ── INFO PANEL ── -->
   <div id="info-panel" class="hidden">
     <div class="info-header">
       <span class="info-title">Component Info</span>
@@ -860,11 +847,9 @@ body {
     </div>
   </div>
 
-  <!-- ── BACK BUTTON ── -->
   <button id="back-btn">
     <img class="back-arrow"
-      src="https://www.figma.com/api/mcp/asset/e04815de-b2d1-4f7c-a5ee-4ed427966bfb"
-      alt="←">
+      src="https://www.figma.com/api/mcp/asset/e04815de-b2d1-4f7c-a5ee-4ed427966bfb" alt="←">
     <span>Back</span>
   </button>
 
@@ -874,9 +859,9 @@ body {
 
 </div><!-- #app -->
 
-<!-- ══════════════════════════════════
-     FIREBASE INIT + PAGE ROUTING
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     FIREBASE INIT + ROUTING
+══════════════════════════════════════ -->
 <script>
   firebase.initializeApp({
     apiKey: "AIzaSyBYz52ac34ve0F79MImQgNJuZD8uI4A8l0",
@@ -886,67 +871,67 @@ body {
     messagingSenderId: "934496894689",
     appId: "1:934496894689:web:5419ac0eecbf08d45d01a0"
   });
-  const _auth = firebase.auth();
-  const _provider = new firebase.auth.GoogleAuthProvider();
+  var _auth = firebase.auth();
+  var _provider = new firebase.auth.GoogleAuthProvider();
 
   window.showPage = function(id) {
-    document.querySelectorAll('#app > .view').forEach(v => { v.style.display = 'none'; });
-    const target = document.getElementById(id);
+    document.querySelectorAll('#app > .view').forEach(function(v) {
+      v.style.display = 'none';
+    });
+    var target = document.getElementById(id);
     if (target) target.style.display = 'block';
-    if (id === 'view-preview') {
-      window.dispatchEvent(new Event('resize'));
-    }
+    if (id === 'view-preview') window.dispatchEvent(new Event('resize'));
+    if (id === 'view-personal-info') target.scrollTop = 0;
   };
 
   document.addEventListener('DOMContentLoaded', function() {
 
     // Splash → Login
-    var btnExplore = document.getElementById('btn-explore');
-    if (btnExplore) btnExplore.addEventListener('click', function() { window.showPage('view-login'); });
-
-    // DESIGN nav → Personal Info (all nav-design elements in home + personal-info)
-    document.querySelectorAll('.nav-design').forEach(function(el) {
-      el.addEventListener('click', function(e) { e.preventDefault(); window.showPage('view-personal-info'); });
+    document.getElementById('btn-explore').addEventListener('click', function() {
+      window.showPage('view-login');
     });
 
-    // Personal Info → Preview
-    var btnNext = document.getElementById('btn-next-step');
-    if (btnNext) btnNext.addEventListener('click', function() { window.showPage('view-preview'); });
+    // DESIGN nav → Personal Info
+    document.querySelectorAll('.nav-design').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.showPage('view-personal-info');
+      });
+    });
 
-    // Personal Info back → Home
-    var piBk = document.getElementById('pi-back-btn');
-    if (piBk) piBk.addEventListener('click', function() { window.showPage('view-home'); });
+    // Personal Info Next Step → Preview
+    document.getElementById('btn-next-step').addEventListener('click', function() {
+      window.showPage('view-preview');
+    });
+
+    // Personal Info Back → Home
+    document.getElementById('pi-back-btn').addEventListener('click', function() {
+      window.showPage('view-home');
+    });
 
     // Google login
-    var gBtn = document.getElementById('googleLoginBtn');
-    if (gBtn) {
-      gBtn.addEventListener('click', function() {
-        _auth.signInWithPopup(_provider).then(function(result) {
-          var user = result.user;
-          window.showPage('view-home');
-        }).catch(function(err) {
-          console.error('Google login error:', err.message);
-          alert('Login failed: ' + err.message);
-        });
+    document.getElementById('googleLoginBtn').addEventListener('click', function() {
+      _auth.signInWithPopup(_provider).then(function(result) {
+        window.showPage('view-home');
+      }).catch(function(err) {
+        console.error('Google login error:', err.code, err.message);
+        alert('Login failed: ' + err.message);
       });
-    }
+    });
 
     // Email login
-    var eBtn = document.getElementById('btn-email-login');
-    if (eBtn) {
-      eBtn.addEventListener('click', function() {
-        var email = document.getElementById('login-email').value.trim();
-        var pwd   = document.getElementById('login-password').value;
-        if (!email || !pwd) { alert('Please enter email and password.'); return; }
-        _auth.signInWithEmailAndPassword(email, pwd).then(function() {
-          window.showPage('view-home');
-        }).catch(function(err) {
-          alert('Login error: ' + err.message);
-        });
+    document.getElementById('btn-email-login').addEventListener('click', function() {
+      var email = document.getElementById('login-email').value.trim();
+      var pwd   = document.getElementById('login-password').value;
+      if (!email || !pwd) { alert('Please enter email and password.'); return; }
+      _auth.signInWithEmailAndPassword(email, pwd).then(function() {
+        window.showPage('view-home');
+      }).catch(function(err) {
+        alert('Login error: ' + err.message);
       });
-    }
+    });
 
-    // Logout (SIGN UP pill acts as logout when authenticated)
+    // Logout
     document.querySelectorAll('.btn-logout').forEach(function(el) {
       el.addEventListener('click', function(e) {
         e.preventDefault();
@@ -956,21 +941,20 @@ body {
 
   });
 
-  // Auth state: if already signed in, skip login
+  // Auth state guard
   _auth.onAuthStateChanged(function(user) {
     if (user) {
-      var visibleView = null;
+      var visible = null;
       document.querySelectorAll('#app > .view').forEach(function(v) {
-        if (v.style.display === 'block') visibleView = v.id;
+        if (v.style.display === 'block') visible = v.id;
       });
-      if (!visibleView || visibleView === 'view-splash' || visibleView === 'view-login') {
+      if (!visible || visible === 'view-splash' || visible === 'view-login') {
         window.showPage('view-home');
       }
     }
   });
 </script>
 
-<!-- Three.js importmap (unchanged) -->
 <script type="importmap">
 {
   "imports": {
